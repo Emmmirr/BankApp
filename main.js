@@ -35,33 +35,47 @@ function actualizarTotal(table) {
     "th[data-name-col='amount']",
   ).cellIndex;
   let noFilas = table.tBodies[0].rows.length;
-  let tfootCeldaTotal = table.tFoot.rows[0].querySelector(
-    "td[data-name-col='totalCantidad']",
-  );
+  // let tfootCeldaTotal = table.tFoot.rows[0].querySelector(
+  //   "td[data-name-col='totalCantidad']",
+  // );
   let suma = 0;
 
   for (let i = 0; i < noFilas; i++) {
     let filaActual = table.tBodies[0].rows[i];
 
-    let valorCelda = +filaActual.cells[indiceTotal].textContent;
+    let valorCelda = +filaActual.cells[indiceTotal].dataset.valorOriginal;
 
     suma += valorCelda;
   }
 
-  tfootCeldaTotal.textContent = `$${suma}`;
-  tarjetaTotal.textContent = suma.toFixed(2);
+  // tfootCeldaTotal.textContent = formatearValorMoneda(suma);
+  tarjetaTotal.textContent = formatearValorMoneda(suma);
   tarjetaRegistros.textContent = noFilas;
 
 
-  console.log(suma);
+  // console.log(suma);
 
   // console.log(noFilas)
   // console.log(table.tBodies[0].rows[])
   //  console.log(indiceTotal.cellIndex);
 }
 
+function formatearValorMoneda(cantidad) {
+  let numeroFormateado = new Intl.NumberFormat('es-MX', {
+    style: 'currency',
+    currency: 'MXN'
+  }).format(+cantidad);
+
+
+  return numeroFormateado;
+}
+
+
+
 function identificarTabla(e) {
   let table = e.target.closest("table");
+
+
   // console.log(thead)
   // console.log(form);
   // console.log(table);
@@ -73,6 +87,7 @@ function identificarTabla(e) {
   let formBoton = form.querySelector('button[type="submit"]');
   let boton = e.target.closest("button");
   let fila = e.target.closest("tr");
+
   // console.log(fila.cells);
   let celda = e.target.closest("td");
   // console.log(celda)
@@ -85,9 +100,14 @@ function identificarTabla(e) {
   if (!boton) return;
   if (boton.dataset.accion == "eliminar") {
     fila.remove();
-        actualizarTotal(table);
+    actualizarTotal(table);
   }
   if (boton.dataset.accion == "editar") {
+
+    console.log(boton.dataset.accion == "cancelar");
+
+    if (boton.dataset.accion == "cancelar") return;
+
     formBoton.textContent = "Guardar cambios";
 
     // console.log(fila.cellIndex)
@@ -103,8 +123,18 @@ function identificarTabla(e) {
 
       let nombreCampo = thead.rows[0].cells[i].dataset.nameCol;
 
+      console.log(nombreCampo)
+      console.log(celdas)
+
       if (form.elements[nombreCampo]) {
-        form.elements[nombreCampo].value = celdas[i].innerText;
+
+        if (form.elements[nombreCampo].name == "amount") {
+          console.log(celdas[i].dataset.valorOriginal);
+          form.elements[nombreCampo].value = celdas[i].dataset.valorOriginal;
+        } else {
+          form.elements[nombreCampo].value = celdas[i].innerText;
+        }
+
       }
 
       // console.log(thead.rows[0].cells[i].dataset.nameCol)
@@ -186,7 +216,26 @@ function agregarDatos(e) {
         // celda.append(botonEliminar);
         // celda.append(botonEditar);
       } else {
-        celda.textContent = formData.get(columna);
+
+        let valor = formData.get(columna);
+
+
+        if (columna == "amount") {
+
+          // const numeroFormateado = new Intl.NumberFormat('es-MX', {
+          //   style: 'currency',
+          //   currency: 'MXN'
+          // }).format(+valor);
+
+          // console.log(numeroFormateado);
+
+          celda.textContent = formatearValorMoneda(valor);
+          celda.dataset.valorOriginal = valor;
+
+          console.log(celda.dataset.valorOriginal);
+        } else {
+          celda.textContent = valor;
+        }
         // console.log(columna);
       }
 
@@ -200,29 +249,65 @@ function agregarDatos(e) {
     // }
     tbody.append(fila);
 
-    e.target.reset();
 
-    actualizarTotal(table);
   } else {
+
+
     for (let i = 0; i < noFilas; i++) {
       let columna = table.tHead.rows[0].cells[i].dataset.nameCol;
+      let valor = formData.get(columna);
 
       if (columna == "acciones") continue;
-      filaEnEdicion.cells[i].textContent = formData.get(columna);
+
+      if (columna == "amount") {
+        filaEnEdicion.cells[i].textContent = formatearValorMoneda(valor);
+        filaEnEdicion.cells[i].dataset.valorOriginal = valor;
+      } else {
+        filaEnEdicion.cells[i].textContent = valor;
+      }
+
+
+
     }
 
-    botonForm.textContent = "Guardar";
-    e.target.reset();
-    filaEnEdicion = null;
-    actualizarTotal(table);
+    // botonForm.textContent = "Guardar";
+    // e.target.reset();
+    // filaEnEdicion = null;
+
   }
+
+  dialogo.close();
+  actualizarTotal(table);
+}
+
+function limpiarFormulario(e) {
+
+  let dialog = e.target;
+
+  let form = dialog.querySelector("form");
+
+  let botonGuardar = form.querySelector('button[type="submit"]');
+
+
+  botonGuardar.textContent = "Guardar";
+
+  form.reset();
+
+  if (filaEnEdicion) {
+    filaEnEdicion = null;
+  }
+
 }
 
 
 
+
 abrir.addEventListener("click", () => dialogo.showModal());
-cerrar.addEventListener("click", () => dialogo.close());
+
+cerrar.addEventListener("click", () => dialogo.close())
+
+dialogo.addEventListener("close", limpiarFormulario);
 
 formulario.addEventListener("submit", agregarDatos);
 
-forumlarioDescuentos.addEventListener("submit", agregarDatos);
+

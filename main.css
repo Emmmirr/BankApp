@@ -40,6 +40,7 @@ body {
     font-size: 14px;
     color: hsl(0, 0%, 57%);
     text-decoration: none;
+    width: 100%;
   }
 
   li {
@@ -71,19 +72,32 @@ ul {
 table {
   border-collapse: collapse;
   table-layout: fixed;
+  width: 100%;
 }
 
-col {
-  width: 350px;
+/* col:nth-child(1){
+  width: 10%;
 }
 
-/* col:nth-child(1) {
-    width: 30%;
+col:nth-child(2) {
+  width: 25%;
+}
+
+
+col:nth-child(3) {
+    width: 45%;
 } */
 
-/* col:nth-child(4) {
-  width: 100px;
-} */
+col:nth-child(4) {
+  width: 150px;
+}
+
+
+col:nth-child(5) {
+    width: 150px;
+}
+
+
 
 table td:nth-child(4) {
   text-align: right;
