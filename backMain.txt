@@ -1,3 +1,6 @@
+Codigo de antes de actualizar la app para guardar los datos en localStorage
+Aqui simplemente viven en el DOM
+
 let firstValue = document.getElementById("inputFirstValue");
 
 let secondValue = document.getElementById("inputSecondValue");
@@ -10,7 +13,9 @@ function sumarValores() {
   showResults.textContent = suma;
 }
 
-let objArray = {};
+let arrayClientes = [];
+
+
 
 // boton.addEventListener("click", sumarValores);
 
@@ -68,8 +73,11 @@ function formatearValorMoneda(cantidad) {
     currency: 'MXN'
   }).format(+cantidad);
 
+
   return numeroFormateado;
 }
+
+
 
 function identificarTabla(e) {
   let table = e.target.closest("table");
@@ -98,19 +106,12 @@ function identificarTabla(e) {
   // console.log(celda);
   if (!boton) return;
   if (boton.dataset.accion == "eliminar") {
-
-    let filaEncontrada = objArray[table.dataset.lista].findIndex(obj => obj.id == +fila.dataset.id);
-    objArray[table.dataset.lista].splice(filaEncontrada, 1);
     fila.remove();
-    console.log(filaEncontrada)
-    guardarDatosLocal(table.dataset.lista, objArray[table.dataset.lista]);
     actualizarTotal(table);
-
   }
-
   if (boton.dataset.accion == "editar") {
 
-    // console.log(boton.dataset.accion == "cancelar");
+    console.log(boton.dataset.accion == "cancelar");
 
     if (boton.dataset.accion == "cancelar") return;
 
@@ -129,13 +130,13 @@ function identificarTabla(e) {
 
       let nombreCampo = thead.rows[0].cells[i].dataset.nameCol;
 
-      // console.log(nombreCampo)
-      // console.log(celdas)
+      console.log(nombreCampo)
+      console.log(celdas)
 
       if (form.elements[nombreCampo]) {
 
         if (form.elements[nombreCampo].name == "amount") {
-          // console.log(celdas[i].dataset.valorOriginal);
+          console.log(celdas[i].dataset.valorOriginal);
           form.elements[nombreCampo].value = celdas[i].dataset.valorOriginal;
         } else {
           form.elements[nombreCampo].value = celdas[i].innerText;
@@ -143,61 +144,47 @@ function identificarTabla(e) {
 
       }
 
+      // console.log(thead.rows[0].cells[i].dataset.nameCol)
     }
 
     dialogo.showModal();
 
-  }
 
+    // console.log(thead.rows[0].cells)
+
+    //Recorremetos el formullario obteniendo sus elementos y valores de estos
+    //Ignorando los botones
+
+    // for (let elemento of form.elements) {
+    //   // Filtramos para no afectar a los botones, solo a los campos de datos
+    //   if (elemento.name) {
+    //     console.log(`Nombre: ${elemento.name}, Valor: ${elemento.value}`);
+    //   }
+    // }
+  }
+  // console.log(boton);
+
+  // console.log(fila);
 }
 
 main.addEventListener("click", identificarTabla);
 
+// main.onclick = function (e) {
+//   let table = e.target.closest("table")
+//   console.log(table)
+//   if(!table) return;
+//   let boton = e.target.closest("button");
+//   let fila = e.target.closest("tr");
+//   if (!boton) return;
+//   if (boton.dataset.accion == "eliminar") {
+//     fila.remove();
+//   }
+//   console.log(boton);
 
-function crearFila(objPago, table) {
-  let fila = document.createElement("tr");
-  let celda = document.createElement("td");
-  let noFilas = table.tHead.rows[0].cells.length;
-
-  for (let i = 0; i < noFilas; i++) {
-    let columna = table.tHead.rows[0].cells[i].dataset.nameCol;
-    let celda = document.createElement("td");
-    let valor = objPago[columna];
-
-    if (columna == "acciones") {
-      let botonEliminar = document.createElement("button");
-      let botonEditar = document.createElement("button");
-      let div = document.createElement("div");
-      botonEditar.dataset.accion = "editar";
-      botonEditar.className = "btn-editar";
-      botonEliminar.dataset.accion = "eliminar";
-      botonEliminar.className = "btn-eliminar";
-      div.className = "acciones";
-      div.append(botonEliminar);
-      div.append(botonEditar);
-      celda.append(div);
-    } else {
-
-
-
-      if (columna == "amount") {
-
-        celda.textContent = formatearValorMoneda(valor);
-        celda.dataset.valorOriginal = valor;
-
-      } else {
-        celda.textContent = valor;
-      }
-    }
-    fila.dataset.id = objPago.id;
-    fila.append(celda);
-  }
-  return fila;
-}
-
+//   console.log(fila);
+// };
 
 function agregarDatos(e) {
-
   e.preventDefault();
   let formData = new FormData(e.target);
   let nombreObtenido = e.target.dataset;
@@ -205,33 +192,87 @@ function agregarDatos(e) {
   let noFilas = table.tHead.rows[0].cells.length;
   let tbody = table.tBodies[0];
   let botonForm = e.target.querySelector('button[type="submit"]');
-  let objCliente = {};
-
 
   if (filaEnEdicion == null) {
+    let fila = document.createElement("tr");
+    // console.log(noFilas);
+    // console.log(table);
+    // console.log(nombreObtenido.table);
 
+    // console.log(e.target);
+    // console.log(e.target.dataset);
+
+        let objCliente = {};
     for (let i = 0; i < noFilas; i++) {
-
       let columna = table.tHead.rows[0].cells[i].dataset.nameCol;
-      let valor = formData.get(columna);
+      let celda = document.createElement("td");
 
-      if (columna == "acciones") continue;
-
-      if (columna == "amount") {
-        objCliente[columna] = valor;
+      if (columna == "acciones") {
+        let botonEliminar = document.createElement("button");
+        let botonEditar = document.createElement("button");
+        let div = document.createElement("div");
+        // botonEditar.textContent = "Editar";
+        botonEditar.dataset.accion = "editar";
+        botonEditar.className = "btn-editar";
+        // botonEliminar.textContent = "Eliminar";
+        botonEliminar.dataset.accion = "eliminar";
+        botonEliminar.className = "btn-eliminar";
+        div.className = "acciones";
+        div.append(botonEliminar);
+        div.append(botonEditar);
+        celda.append(div);
+        // celda.append(botonEliminar);
+        // celda.append(botonEditar);
       } else {
-        objCliente[columna] = valor;
+
+        let valor = formData.get(columna);
+
+
+
+
+        if (columna == "amount") {
+
+          // const numeroFormateado = new Intl.NumberFormat('es-MX', {
+          //   style: 'currency',
+          //   currency: 'MXN'
+          // }).format(+valor);
+
+          // console.log(numeroFormateado);
+
+          celda.textContent = formatearValorMoneda(valor);
+          celda.dataset.valorOriginal = valor;
+          objCliente[columna] = valor;
+          console.log(celda.dataset.valorOriginal);
+        } else {
+          celda.textContent = valor;
+          objCliente[columna] = valor;
+        }
+        // console.log(columna);
       }
+
+
+
+      fila.append(celda);
 
     }
 
     objCliente.id = Date.now();
-    objArray[table.dataset.lista].push(objCliente);
-    tbody.append(crearFila(objCliente, table));
+    fila.dataset.id = objCliente.id;
+    arrayClientes.push(objCliente)
+    console.log(arrayClientes)
+
+    // for (let [name, value] of formData) {
+    //   let celda = document.createElement("td");
+    //   celda.textContent = formData.get(name);
+    //   fila.append(celda);
+    // }
+    tbody.append(fila);
+
+
+
 
   } else {
 
-    let objEncontrado = objArray[table.dataset.lista].find(obj => obj.id == +filaEnEdicion.dataset.id);
 
     for (let i = 0; i < noFilas; i++) {
       let columna = table.tHead.rows[0].cells[i].dataset.nameCol;
@@ -242,21 +283,23 @@ function agregarDatos(e) {
       if (columna == "amount") {
         filaEnEdicion.cells[i].textContent = formatearValorMoneda(valor);
         filaEnEdicion.cells[i].dataset.valorOriginal = valor;
-        objEncontrado[columna] = valor;
       } else {
         filaEnEdicion.cells[i].textContent = valor;
-        objEncontrado[columna] = valor;
       }
+
+
+
     }
+
+    // botonForm.textContent = "Guardar";
+    // e.target.reset();
+    // filaEnEdicion = null;
+
   }
 
   dialogo.close();
   actualizarTotal(table);
-  guardarDatosLocal(table.dataset.lista, objArray[table.dataset.lista]);
-  console.log(JSON.parse(localStorage.listaPagos))
 }
-
-
 
 function limpiarFormulario(e) {
 
@@ -277,49 +320,8 @@ function limpiarFormulario(e) {
 
 }
 
-function guardarDatosLocal(name, array) {
-  let arrayConvertido = JSON.stringify(array);
-  localStorage.setItem(name, arrayConvertido);
-  console.log(localStorage.getItem(name))
-}
-
-function pintarDatos() {
-
-}
 
 
-let tableAll = document.querySelectorAll("table[data-lista]");
-
-
-tableAll.forEach(tabla => {
-  console.log(tabla);
-  if (localStorage[tabla.dataset.lista]) {
-    let tbody = tabla.tBodies[0];
-    let datosConvertidos = JSON.parse(localStorage[tabla.dataset.lista]);
-    console.log(datosConvertidos)
-    objArray[tabla.dataset.lista] = datosConvertidos;
-
-
-    for (let obj of objArray[tabla.dataset.lista]) {
-
-      tbody.append(crearFila(obj, tabla))
-
-      // console.log(crearFila(objArray[tabla.dataset.lista][obj], tabla))
-
-    }
-    console.log(objArray[tabla.dataset.lista])
-
-
-
-  } else {
-    objArray[tabla.dataset.lista] = [];
-  }
-
-  actualizarTotal(tabla);
-
-})
-
-console.log(localStorage)
 
 abrir.addEventListener("click", () => dialogo.showModal());
 

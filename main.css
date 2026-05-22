@@ -47,6 +47,7 @@ body {
     display: flex;
     padding-left: 10px;
     height: 30px;
+
     &:hover {
       background: white;
     }
@@ -94,7 +95,7 @@ col:nth-child(4) {
 
 
 col:nth-child(5) {
-    width: 150px;
+  width: 150px;
 }
 
 
@@ -115,6 +116,7 @@ table td {
   border-left: none;
   border-right: none;
 }
+
 table th {
   border: 1px solid #eee;
   padding: 12px;
@@ -125,14 +127,15 @@ table th {
   text-align: start;
 }
 
+table th:nth-child(5) {
+  text-align: center;
+}
+
 form {
   width: 525px;
 }
 
-input {
-  width: 200px;
-  max-width: 300px;
-}
+
 
 .btn-general {
   display: inline-flex;
@@ -211,8 +214,8 @@ input {
 dialog {
   border: none;
   border-radius: 10px;
-  height: 500px;
-  width: 500px;
+  height: 800px;
+  width: 600px;
   margin: auto;
 
   &::backdrop {
@@ -225,11 +228,13 @@ dialog {
   flex-direction: column;
   align-items: center;
   gap: 25px;
-  padding: 30px;
+  height: 100%;
+  padding: 20px;
 
   form {
     width: 100%;
     display: flex;
+    flex: 1;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -246,6 +251,7 @@ dialog {
 .pagos-header {
   padding: 10px;
   height: 20px;
+
   h1 {
     font-weight: 600;
   }
@@ -264,16 +270,53 @@ dialog {
   height: 110px;
   border-left: none;
   border-right: none;
-    padding: 10px;
-    gap: 10px;
+  padding: 10px;
+  gap: 10px;
 
-    span{
-      font-size: 30px;
-    }
+  span {
+    font-size: 30px;
+  }
 }
 
 .tarjetas:nth-child(1),
 .tarjetas:nth-child(2),
-.tarjetas:nth-child(3){
+.tarjetas:nth-child(3) {
   border-right: 1px solid #eee;
+}
+
+
+.form-section {
+  display: flex;
+  gap: 35px;
+  width: 100%;
+  justify-content: center;
+
+  input {
+    height: 35px;
+    width: 250px;
+    max-width: 300px;
+    border-radius: 4px;
+    background: hsl(0, 0%, 97%);
+    border: 1px solid hsl(0, 0%, 80%);
+    padding: 10px;
+
+    &:user-invalid{
+      border-color: red;
+    }
+  }
+
+  h2 {
+    font-size: 15px;
+    font-weight: normal
+  }
+
+
+}
+
+.button-form-section {
+  display: flex;
+  margin-top: auto;
+  width: 100%;
+  justify-content: center;
+  gap: 20px;
 }
