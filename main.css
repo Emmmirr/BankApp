@@ -320,3 +320,7 @@ dialog {
   justify-content: center;
   gap: 20px;
 }
+
+.texto-rojo{
+  color: red;
+}

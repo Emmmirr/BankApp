@@ -1,5 +1,7 @@
 import { formatearValorMoneda } from "./metodos.js";
 import Router from "./router.js"
+import TableDatos from "/components/TableDatos.js"
+import PageHeader from "./components/PageHeader.js";
 
 let boton = document.getElementById("boton-guardar");
 

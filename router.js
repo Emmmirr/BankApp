@@ -1,3 +1,5 @@
+import ClientePage from "./components/ClientePage.js";
+
 const Router = {
     init: () => {
 
@@ -44,8 +46,8 @@ const Router = {
                 return el;
             },
             "/clients": () => {
-                el = document.createElement("h1");
-                el.textContent = "Clients";
+                el = document.createElement("cliente-page");
+
                 return el;
             },
             404: () => {
