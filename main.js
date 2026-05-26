@@ -1,18 +1,11 @@
-let firstValue = document.getElementById("inputFirstValue");
-
-let secondValue = document.getElementById("inputSecondValue");
-let showResults = document.querySelector(".results");
+import { formatearValorMoneda } from "./metodos.js";
+import Router from "./router.js"
 
 let boton = document.getElementById("boton-guardar");
 
-function sumarValores() {
-  let suma = +firstValue.value + +secondValue.value;
-  showResults.textContent = suma;
-}
 
 let objArray = {};
 
-// boton.addEventListener("click", sumarValores);
 
 let clienteValue = document.getElementById("client-name");
 let datePago = document.getElementById("date-pago");
@@ -32,7 +25,7 @@ const dialogo = document.getElementById("miDialogo");
 const abrir = document.getElementById("abrir");
 const cerrar = document.getElementById("cerrar");
 
-function actualizarTotal(table) {
+export function actualizarTotal(table) {
   let indiceTotal = table.tHead.rows[0].querySelector(
     "th[data-name-col='amount']",
   ).cellIndex;
@@ -60,15 +53,6 @@ function actualizarTotal(table) {
   // console.log(noFilas)
   // console.log(table.tBodies[0].rows[])
   //  console.log(indiceTotal.cellIndex);
-}
-
-function formatearValorMoneda(cantidad) {
-  let numeroFormateado = new Intl.NumberFormat('es-MX', {
-    style: 'currency',
-    currency: 'MXN'
-  }).format(+cantidad);
-
-  return numeroFormateado;
 }
 
 function identificarTabla(e) {
@@ -177,8 +161,6 @@ function crearFila(objPago, table) {
       div.append(botonEditar);
       celda.append(div);
     } else {
-
-
 
       if (columna == "amount") {
 
@@ -290,7 +272,6 @@ function pintarDatos() {
 
 let tableAll = document.querySelectorAll("table[data-lista]");
 
-
 tableAll.forEach(tabla => {
   console.log(tabla);
   if (localStorage[tabla.dataset.lista]) {
@@ -298,7 +279,6 @@ tableAll.forEach(tabla => {
     let datosConvertidos = JSON.parse(localStorage[tabla.dataset.lista]);
     console.log(datosConvertidos)
     objArray[tabla.dataset.lista] = datosConvertidos;
-
 
     for (let obj of objArray[tabla.dataset.lista]) {
 
@@ -308,8 +288,6 @@ tableAll.forEach(tabla => {
 
     }
     console.log(objArray[tabla.dataset.lista])
-
-
 
   } else {
     objArray[tabla.dataset.lista] = [];
@@ -328,5 +306,13 @@ cerrar.addEventListener("click", () => dialogo.close())
 dialogo.addEventListener("close", limpiarFormulario);
 
 formulario.addEventListener("submit", agregarDatos);
+
+
+window.app = {};
+app.router = Router;
+
+window.addEventListener("DOMContentLoaded", () => {
+  app.router.init();
+})
 
 
