@@ -2,6 +2,7 @@ import { formatearValorMoneda } from "./metodos.js";
 import Router from "./router.js"
 import TableDatos from "/components/TableDatos.js"
 import PageHeader from "./components/PageHeader.js";
+import FormDialog from "./components/FormDialog.js";
 
 let boton = document.getElementById("boton-guardar");
 
@@ -299,6 +300,8 @@ tableAll.forEach(tabla => {
 
 })
 
+
+
 console.log(localStorage)
 
 abrir.addEventListener("click", () => dialogo.showModal());
@@ -316,5 +319,6 @@ app.router = Router;
 window.addEventListener("DOMContentLoaded", () => {
   app.router.init();
 })
+
 
 

@@ -1,26 +1,36 @@
+import FormDialog from "./FormDialog.js";
+
 class TableDatos extends HTMLElement {
-    constructor() {
-        super(); //LLama al constructor de htmlElement
-        this.attachShadow({ mode: 'open' });
-    }
+  constructor() {
+    super(); //LLama al constructor de htmlElement
+    this.attachShadow({ mode: 'open' });
+    this._modalExterno = null;
+    this._btnCerrar = null;
+  }
 
-    render() {
+  render() {
 
-        const clase = this.getAttribute('class');
+    const clase = this.getAttribute('class');
+    const idTable = this.getAttribute('id');
+    const dataTable = this.dataset.lista;
+    const colums = this.getAttribute('colums');
+    const dataColumn = this.dataset.nameCol;
 
-        this.shadowRoot.innerHTML = `
+    let arrayColums = colums.split(', ');
+    this.shadowRoot.innerHTML = `
 
         <style>
         .datosContainer {
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
-  margin: 0 auto;
-  gap: 25px;
+          display: flex;
+          align-items: flex-start;    
+          flex-direction: column;
+          margin: 0 auto;
+          gap: 25px;
 
-  button {
-    align-self: flex-end;
-  }
+          button {
+            align-self: flex-end;
+          }
+        }
 
   .datosContainerHeader {
   display: flex;
@@ -92,27 +102,26 @@ table th:nth-child(5) {
 </style>
 
 
+
+
     <div class="datosContainer">
       <div class="datosContainerHeader">
         <button class="btn-agregar btn-general" id="abrir">Nuevo pago</button>
       </div>
 
-      <table id="table-pagos" data-lista="listaPagos">
+      <table id="${idTable}" data-lista="${dataTable}">
         <colgroup>
-          <col />
-          <col />
-          <col />
-          <col />
-          <col />
+          ${arrayColums.map(column => {
+      return "<col />"
+    }).join("")}
         </colgroup>
 
         <thead>
           <tr>
-            <th data-name-col="date-pago">Fecha</th>
-            <th data-name-col="client-name">Cliente</th>
-            <th data-name-col="concept">Concepto</th>
-            <th data-name-col="amount">Cantidad</th>
-            <th data-name-col="acciones">Acciones</th>
+          ${arrayColums.map(column => {
+      return `<th data-name-col="${column}">` + column + "</th>"
+    }).join("")}
+
           </tr>
         </thead>
 
@@ -126,13 +135,90 @@ table th:nth-child(5) {
             </tr>
           </tfoot> -->
       </table>
+
+      <form-dialog>
+          <slot name="form"></slot>
+      </form-dialog>
+
     </div>
         `
-    }
 
-    connectedCallback() {
-        this.render()
+  }
+
+  connectedCallback() {
+
+    this.render();
+    this.addEventListener('open-modal', (e) => {
+      this._modalExterno = e.detail.value;
+      this._btnCerrar = e.detail.boton;
+
+
+      if (this._btnCerrar) {
+        this._btnCerrar.addEventListener('click', () => {
+          this._modalExterno.close();
+        })
+      }
+      console.log(this._modalExterno)
+      console.log(this._btnCerrar)
+    })
+
+    this.shadowRoot.querySelector('#abrir').addEventListener('click', () => {
+      if (this._modalExterno) {
+        this._modalExterno.showModal();
+      } else {
+        console.log("Error")
+      }
+    })
+  }
+
+  static get observedAttributes() {
+    return ["class", "id", "colums"]
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    this.render();
+  }
+
+
+   crearFila(objPago, table) {
+    let fila = document.createElement("tr");
+    let celda = document.createElement("td");
+    let noFilas = table.tHead.rows[0].cells.length;
+  
+    for (let i = 0; i < noFilas; i++) {
+      let columna = table.tHead.rows[0].cells[i].dataset.nameCol;
+      let celda = document.createElement("td");
+      let valor = objPago[columna];
+  
+      if (columna == "acciones") {
+        let botonEliminar = document.createElement("button");
+        let botonEditar = document.createElement("button");
+        let div = document.createElement("div");
+        botonEditar.dataset.accion = "editar";
+        botonEditar.className = "btn-editar";
+        botonEliminar.dataset.accion = "eliminar";
+        botonEliminar.className = "btn-eliminar";
+        div.className = "acciones";
+        div.append(botonEliminar);
+        div.append(botonEditar);
+        celda.append(div);
+      } else {
+  
+        if (columna == "amount") {
+  
+          celda.textContent = formatearValorMoneda(valor);
+          celda.dataset.valorOriginal = valor;
+  
+        } else {
+          celda.textContent = valor;
+        }
+      }
+      fila.dataset.id = objPago.id;
+      fila.append(celda);
     }
+    return fila;
+  }
+
 }
 
 customElements.define("table-datos", TableDatos);

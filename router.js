@@ -47,7 +47,6 @@ const Router = {
             },
             "/clients": () => {
                 el = document.createElement("cliente-page");
-
                 return el;
             },
             404: () => {

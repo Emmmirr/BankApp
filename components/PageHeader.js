@@ -10,8 +10,6 @@ class PageHeader extends HTMLElement {
         const title = this.getAttribute('title') ?? 'Sin titulo';
         this.shadowRoot.innerHTML = `
 
-        
-
         <style>
         .page-header {
         padding: 10px;
