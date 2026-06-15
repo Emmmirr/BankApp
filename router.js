@@ -1,4 +1,6 @@
 import ClientePage from "./components/ClientePage.js";
+import PolizasPage from "./components/PolizasPage.js";
+import PlanesPage from "./components/PlanesPage.js"
 
 const Router = {
     init: () => {
@@ -37,6 +39,12 @@ const Router = {
             history.pushState({ route }, null, route);
         }
 
+        if(route.length == 0){
+            location = "/";
+        }
+
+        
+
         let el;
 
         const routes = {
@@ -47,6 +55,14 @@ const Router = {
             },
             "/clients": () => {
                 el = document.createElement("cliente-page");
+                return el;
+            },
+            "/polizas" : () => {
+                el = document.createElement("polizas-page");
+                return el;
+            },
+            "/planes" : () => {
+                el = document.createElement("planes-page");
                 return el;
             },
             404: () => {

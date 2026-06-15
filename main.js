@@ -1,4 +1,5 @@
-import { formatearValorMoneda } from "./metodos.js";
+import { formatearValorMoneda } from "/components/utils.js";
+import { guardarDatosLocal } from "./components/utils.js";
 import Router from "./router.js"
 import TableDatos from "/components/TableDatos.js"
 import PageHeader from "./components/PageHeader.js";
@@ -262,11 +263,7 @@ function limpiarFormulario(e) {
 
 }
 
-function guardarDatosLocal(name, array) {
-  let arrayConvertido = JSON.stringify(array);
-  localStorage.setItem(name, arrayConvertido);
-  console.log(localStorage.getItem(name))
-}
+
 
 function pintarDatos() {
 
@@ -311,6 +308,7 @@ cerrar.addEventListener("click", () => dialogo.close())
 dialogo.addEventListener("close", limpiarFormulario);
 
 formulario.addEventListener("submit", agregarDatos);
+
 
 
 window.app = {};

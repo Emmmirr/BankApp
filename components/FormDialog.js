@@ -1,10 +1,16 @@
 class FormDialog extends HTMLElement {
+
+
     constructor() {
         super();
         this.attachShadow({ mode: 'open' })
     }
 
     render() {
+
+        const btnText = this.getAttribute('btn-text') || 'Guardar';
+
+
         this.shadowRoot.innerHTML =
             `
 
@@ -82,7 +88,7 @@ class FormDialog extends HTMLElement {
             </slot>
 
             <div class="button-form-section">
-                <button class="btn-general" type="submit" id="boton-guardar"> Guardar</button>
+                <button class="btn-general" type="submit" id="boton-guardar">${btnText}</button>
 
                 <button class="btn-general" id="cerrar" data-accion="cerrar">Cerrar</button>
             </div>
@@ -94,10 +100,14 @@ class FormDialog extends HTMLElement {
     connectedCallback() {
         this.render();
 
+
+
         setTimeout(() => {
             let dialog = this.shadowRoot.getElementById('miDialogo');
             let btn = this.shadowRoot.querySelector('#cerrar')
             let btnGuardar = this.shadowRoot.querySelector('#boton-guardar')
+
+
             this.dispatchEvent(new CustomEvent('open-modal', {
                 bubbles: true,
                 composed: true,
@@ -111,20 +121,35 @@ class FormDialog extends HTMLElement {
                 this.dispatchEvent(new CustomEvent('click-guardar', {
                     bubbles: true,
                     composed: true,
-                }))
-            })
+                }));
+            });
+
 
 
         }, 0);
 
 
-    }
-
-    abrirModal() {
 
     }
 
+    static get observedAttributes() {
+        return ['btn-text'];
+    }
 
+
+
+
+    attributeChangedCallback(name, oldValue, newValue) {
+
+        if (oldValue === newValue) return;
+
+        let btnGuardar = this.shadowRoot.querySelector('#boton-guardar');
+
+        if (btnGuardar) {
+            btnGuardar.textContent = this.getAttribute('btn-text');
+        }
+
+    }
 
 
 

@@ -1,4 +1,6 @@
 import FormDialog from "./FormDialog.js";
+import { formatearValorMoneda } from "./utils.js";
+import { guardarDatosLocal } from "./utils.js";
 
 class TableDatos extends HTMLElement {
   constructor() {
@@ -6,6 +8,7 @@ class TableDatos extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this._modalExterno = null;
     this._btnCerrar = null;
+    this._arObj = {};
   }
 
   render() {
@@ -16,7 +19,7 @@ class TableDatos extends HTMLElement {
     const colums = this.getAttribute('colums');
     const dataColumn = this.dataset.nameCol;
 
-    let arrayColums = colums.split(', ');
+    let arrayColums = colums.split(',');
     this.shadowRoot.innerHTML = `
 
         <style>
@@ -37,6 +40,34 @@ class TableDatos extends HTMLElement {
   width: 100%;
   justify-content: space-between;
 }
+  
+.btn-editar {
+  background-image: url("images/edit.svg");
+  background-repeat: no-repeat;
+  height: 20px;
+  width: 20px;
+  border: none;
+  background-color: transparent;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.btn-eliminar {
+  background-image: url("images/trash.svg");
+  background-repeat: no-repeat;
+  height: 20px;
+  width: 20px;
+  border: none;
+  background-color: transparent;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+
 
 .btn-agregar {
   background-image: url("images/plus.svg");
@@ -119,7 +150,7 @@ table th:nth-child(5) {
         <thead>
           <tr>
           ${arrayColums.map(column => {
-      return `<th data-name-col="${column}">` + column + "</th>"
+      return `<th data-name-col="${column.trim().toLowerCase().split(" ").join("-")}"> ${column.trim()} </th>`
     }).join("")}
 
           </tr>
@@ -148,6 +179,32 @@ table th:nth-child(5) {
   connectedCallback() {
 
     this.render();
+
+    let table = this.shadowRoot.querySelector('table');
+
+    console.log(table)
+
+    table.addEventListener('click', (e) => {
+      let btn = e.target.closest('button');
+      if (!btn) return;
+      let btnData = btn.dataset.accion;
+      let fila = e.target.closest('tr');
+
+      // console.log(btn);
+      // console.log(fila);
+      // console.log(filaId)
+
+      this.dispatchEvent(new CustomEvent('tabla-click', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          btnData : btnData,
+          fila: fila,
+        }
+
+      }))
+    });
+
     this.addEventListener('open-modal', (e) => {
       this._modalExterno = e.detail.value;
       this._btnCerrar = e.detail.boton;
@@ -169,27 +226,66 @@ table th:nth-child(5) {
         console.log("Error")
       }
     })
+
+
   }
+
+
+  pintarDatos(array) {
+
+    let table = this.shadowRoot.querySelector('table');
+    let tbody = table.tBodies[0];
+    tbody.innerHTML = "";
+    for (let obj of array) {
+      tbody.append(this.crearFila(obj, table))
+    }
+
+    console.log(table.dataset.lista)
+  }
+
+
+  cerrarModal() {
+    this._modalExterno.close();
+  }
+
+  // agregarNuevaFila(obj) {
+
+  //   let table = this.shadowRoot.querySelector('table');
+  //   let tbody = table.tBodies[0];
+  //   tbody.append(this.crearFila(obj));
+  // }
+
+
 
   static get observedAttributes() {
     return ["class", "id", "colums"]
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback( ) {
     this.render();
   }
 
+  setBtnText (txt) {
+    let formDialog = this.shadowRoot.querySelector('form-dialog');
 
-   crearFila(objPago, table) {
+    console.log(formDialog)
+
+    formDialog.setAttribute('btn-text', txt);
+
+  }
+
+
+  crearFila(objPago) {
+    let table = this.shadowRoot.querySelector('table');
     let fila = document.createElement("tr");
     let celda = document.createElement("td");
     let noFilas = table.tHead.rows[0].cells.length;
-  
+
     for (let i = 0; i < noFilas; i++) {
       let columna = table.tHead.rows[0].cells[i].dataset.nameCol;
       let celda = document.createElement("td");
       let valor = objPago[columna];
-  
+
       if (columna == "acciones") {
         let botonEliminar = document.createElement("button");
         let botonEditar = document.createElement("button");
@@ -203,12 +299,12 @@ table th:nth-child(5) {
         div.append(botonEditar);
         celda.append(div);
       } else {
-  
+
         if (columna == "amount") {
-  
+
           celda.textContent = formatearValorMoneda(valor);
           celda.dataset.valorOriginal = valor;
-  
+
         } else {
           celda.textContent = valor;
         }
