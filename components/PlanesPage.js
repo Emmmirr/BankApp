@@ -3,7 +3,7 @@ import TableDatos from "./TableDatos.js";
 import FormDialog from "./FormDialog.js";
 import CardsInfo from "./CardsInfo.js"
 
-import { comprobarDatosLocal, guardarDatosLocal } from "./utils.js";
+import { comprobarDatosLocal, guardarDatosLocal, sumarCantidades } from "./utils.js";
 
 class PlanesPage extends HTMLElement {
 
@@ -87,7 +87,7 @@ class PlanesPage extends HTMLElement {
 
           </cards-info>
         <table-datos id="table-planes" data-lista="listaPlanes" 
-        colums="Nombre,Descripcion,Precio Anual,Acciones">
+        colums="Nombre,Descripcion,Precio Anual:Money,Acciones">
 
           <form slot="form" action="" id="formPlanes" data-table="table-planes">
 
@@ -223,17 +223,11 @@ class PlanesPage extends HTMLElement {
 
   }
 
-  sumarCantidades(arr) {
 
-    console.log(arr)
-    return arr.reduce((sum, current) => sum + +current['precio-anual'], 0);
-
-  }
 
   actualizarInterfaz(arr) {
-
     this._compTable.pintarDatos(arr);
-    this._compCardsInfo.setAttribute('total-cantidad', this.sumarCantidades(arr));
+    this._compCardsInfo.setAttribute('total-cantidad', sumarCantidades(arr, "precio-anual"));
     this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayPlanes.length);
   }
 

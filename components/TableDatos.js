@@ -17,9 +17,14 @@ class TableDatos extends HTMLElement {
     const idTable = this.getAttribute('id');
     const dataTable = this.dataset.lista;
     const colums = this.getAttribute('colums');
+    const dataColumsMoney = this.getAttribute('colums-money');
     const dataColumn = this.dataset.nameCol;
+    const dataType = this.dataset.type;
 
     let arrayColums = colums.split(',');
+
+    console.log(arrayColums)
+
     this.shadowRoot.innerHTML = `
 
         <style>
@@ -143,36 +148,48 @@ table th:nth-child(5) {
       <table id="${idTable}" data-lista="${dataTable}">
         <colgroup>
           ${arrayColums.map(column => {
-      return "<col />"
-    }).join("")}
+    return "<col />"
+  }).join("")}
         </colgroup>
 
         <thead>
           <tr>
           ${arrayColums.map(column => {
-      return `<th data-name-col="${column.trim().toLowerCase().split(" ").join("-")}"> ${column.trim()} </th>`
-    }).join("")}
+            let nombre;
+            let tipo = "";
 
-          </tr>
-        </thead>
+          if (column.includes(":")) {
+            
+          [nombre, tipo] = column.trim().split(':');
+
+          console.log(nombre, tipo);
+          }else{
+            nombre = column;
+          }
+      return `<th data-name-col="${nombre.trim().toLowerCase().split(" ").join("-")}" data-type="${tipo}"> ${nombre.trim()} </th>`
+    }).join("")
+  }
+
+          </tr >
+        </thead >
 
         <tbody></tbody>
 
-        <!-- <tfoot>
-            <tr>
-              <td colspan="3">Total</td>
-              <td data-name-col="totalCantidad"></td>
-              <td></td>
-            </tr>
-          </tfoot> -->
-      </table>
+        <!-- < tfoot >
+  <tr>
+    <td colspan="3">Total</td>
+    <td data-name-col="totalCantidad"></td>
+    <td></td>
+  </tr>
+          </tfoot > -->
+      </table >
 
-      <form-dialog>
-          <slot name="form"></slot>
-      </form-dialog>
+    <form-dialog>
+      <slot name="form"></slot>
+    </form-dialog>
 
-    </div>
-        `
+    </div >
+    `
 
   }
 
@@ -198,7 +215,7 @@ table th:nth-child(5) {
         bubbles: true,
         composed: true,
         detail: {
-          btnData : btnData,
+          btnData: btnData,
           fila: fila,
         }
 
@@ -261,11 +278,11 @@ table th:nth-child(5) {
     return ["class", "id", "colums"]
   }
 
-  attributeChangedCallback( ) {
+  attributeChangedCallback() {
     this.render();
   }
 
-  setBtnText (txt) {
+  setBtnText(txt) {
     let formDialog = this.shadowRoot.querySelector('form-dialog');
 
     console.log(formDialog)
@@ -279,14 +296,15 @@ table th:nth-child(5) {
     let table = this.shadowRoot.querySelector('table');
     let fila = document.createElement("tr");
     let celda = document.createElement("td");
-    let noFilas = table.tHead.rows[0].cells.length;
+    let noCols = table.tHead.rows[0].cells.length;
 
-    for (let i = 0; i < noFilas; i++) {
-      let columna = table.tHead.rows[0].cells[i].dataset.nameCol;
+    for (let i = 0; i < noCols; i++) {
+      let nameCol = table.tHead.rows[0].cells[i].dataset.nameCol;
+      let columnaType = table.tHead.rows[0].cells[i].dataset.type;
       let celda = document.createElement("td");
-      let valor = objPago[columna];
+      let valor = objPago[nameCol] || "";
 
-      if (columna == "acciones") {
+      if (nameCol == "acciones") {
         let botonEliminar = document.createElement("button");
         let botonEditar = document.createElement("button");
         let div = document.createElement("div");
@@ -300,7 +318,7 @@ table th:nth-child(5) {
         celda.append(div);
       } else {
 
-        if (columna == "amount") {
+        if (columnaType.toLowerCase() == "money" ) {
 
           celda.textContent = formatearValorMoneda(valor);
           celda.dataset.valorOriginal = valor;

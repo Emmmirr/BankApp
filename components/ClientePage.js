@@ -2,7 +2,7 @@ import PageHeader from "./PageHeader.js";
 import TableDatos from "./TableDatos.js";
 import FormDialog from "./FormDialog.js";
 import CardsInfo from "./CardsInfo.js"
-import { comprobarDatosLocal, guardarDatosLocal } from "./utils.js";
+import { comprobarDatosLocal, guardarDatosLocal, sumarCantidades } from "./utils.js";
 
 class ClientePage extends HTMLElement {
 
@@ -69,7 +69,7 @@ class ClientePage extends HTMLElement {
           </cards-info>
         <table-datos id="table-pagos" data-lista="listaPagos" 
         colums="Client Name,Date Pago,Concept,
-        Amount,Acciones">
+        Amount:Money,Acciones">
 
           <form slot="form" action="" id="formDatos" data-table="table-pagos">
 
@@ -220,9 +220,7 @@ class ClientePage extends HTMLElement {
 
   }
 
-  sumarCantidades(arr) {
-    return arr.reduce((sum, current) => sum + +current.amount, 0);
-  }
+
 
   //Se hizo un solo metodo para todo aquello que se ejecutaba
   //al inicio o al final de alguna accion como al iniciar la pag.
@@ -230,7 +228,7 @@ class ClientePage extends HTMLElement {
 
   actualizarInterfaz(arr) {
     this._compTable.pintarDatos(arr);
-    this._compCardsInfo.setAttribute('total-cantidad', this.sumarCantidades(arr));
+    this._compCardsInfo.setAttribute('total-cantidad', sumarCantidades(arr, "amount"));
     this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayClientes.length);
   }
 

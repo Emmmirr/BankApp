@@ -27,5 +27,9 @@ export function comprobarDatosLocal(lista) {
       // guardarDatosLocal(list, objForm);
 }
 
+export function sumarCantidades (arr, nombreCampo) {
+   return arr.reduce((sum, current) => sum + +current[nombreCampo], 0);
+}
+
 
 
