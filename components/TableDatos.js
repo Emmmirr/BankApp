@@ -103,13 +103,7 @@ table {
   width: 100%;
 }
 
-table td:nth-child(4) {
-  text-align: right;
-}
 
-table tfoot td:nth-child(2) {
-  text-align: right;
-}
 
 table td {
   border: 1px solid black;
@@ -130,9 +124,10 @@ table th {
   text-align: start;
 }
 
-table th:nth-child(5) {
-  text-align: center;
+.acciones {
+width: 10px;
 }
+
 
 
 </style>
@@ -175,13 +170,6 @@ table th:nth-child(5) {
 
         <tbody></tbody>
 
-        <!-- < tfoot >
-  <tr>
-    <td colspan="3">Total</td>
-    <td data-name-col="totalCantidad"></td>
-    <td></td>
-  </tr>
-          </tfoot > -->
       </table >
 
     <form-dialog>
@@ -312,9 +300,11 @@ table th:nth-child(5) {
         botonEditar.className = "btn-editar";
         botonEliminar.dataset.accion = "eliminar";
         botonEliminar.className = "btn-eliminar";
-        div.className = "acciones";
+        // div.className = "acciones";
         div.append(botonEliminar);
         div.append(botonEditar);
+
+        celda.className = "acciones"
         celda.append(div);
       } else {
 

@@ -73,7 +73,7 @@ class PolizasPage extends HTMLElement {
                 }
 
                 label {
-                  display: block;
+                display: block;
                   font-size: 15px;
                   font-weight: normal;
                 }
@@ -89,43 +89,63 @@ class PolizasPage extends HTMLElement {
 
           </cards-info>
         <table-datos id="table-polizas" data-lista="listaPolizas" 
-        colums="Producto ,Precio Anual,Acciones">
+        colums="Cliente,Plan,Fecha Inicio,Fecha Fin,Estado,Precio Contratado,Fecha Emision,Acciones">
 
           <form slot="form" action="" id="formPolizas" data-table="table-polizas">
 
 
           <div class="form-section">
             <div>
-              <label for="cliente-id">Cliente:</label>
+              <label for="cliente">Cliente:</label>
               
-              <select name="cliente-id" id="cliente-id">
+              <select name="cliente" id="cliente">
                 <option value="">Selecciona el cliente</option>
               </select>
 
             </div>
 
             <div>
-                          <h2>Producto</h2>
-              <input type="text" name="producto" id="producto" required />
+              <label for="plan">Plan</label>
+              <select name="plan" id="plan"/>
+                <option value="">Selecciona el producto</option>
+              </select>
             </div>
           </div>
 
           <div class="form-section">
             <div>
-                  <div>
-              <label for="cliente-concepto">Cliente concepto:</label>
-              
-              <select name="cliente-concepto" id="cliente-concepto">
-                <option value="">Selecciona el cliente</option>
-              </select>
-
-            </div>
+              <h2>Fecha Inicio</h2>
+              <input type="date" name="fecha-inicio" id="fecha-inicio" />
             </div>
 
             <div>
-              <h2>Precio Anual</h2>
-              <input type="number" step="0.01" name="precio-anual" id="precio-anual" />
+              <h2>Fecha Fin</h2>
+              <input type="date" name="fecha-fin" id="fecha-fin" />
             </div>
+          </div>
+
+          <div class="form-section">
+            <div>
+              <h2>Estado</h2>
+              <select name="estado" id="estado"/>
+                <option value="">Selecciona el producto</option>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+            </div>
+
+            <div>
+              <h2>Precio Contratado</h2>
+              <input type="number" step="0.01" name="precio-contratado" id="precio-contratado" required />
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div>
+              <h2>Fecha Emision</h2>
+              <input type="date" name="fecha-emision" id="fecha-emision" />
+            </div>
+
           </div>
 
         </form>
@@ -153,8 +173,8 @@ class PolizasPage extends HTMLElement {
     let form = this.shadowRoot.querySelector('form');
     let select = this.shadowRoot.querySelector('select');
 
-    this.llenarSelect("cliente-id",this._arrayPagos, "id", "client-name")
-    this.llenarSelect("cliente-concepto",this._arrayPagos, "concept", "concept")
+    this.llenarSelect("cliente",this._arrayPagos, "id", "client-name")
+    this.llenarSelect("plan", this._arrayPlanes, "id", "nombre" )
 
     // if (this._arrayPagos) {
 
@@ -178,8 +198,6 @@ class PolizasPage extends HTMLElement {
         let formData = new FormData(form);
 
         let objForm = Object.fromEntries(formData.entries());
-
-        objForm['precio-anual'] = +objForm['precio-anual'];
 
         console.log(objForm)
 
@@ -267,10 +285,14 @@ class PolizasPage extends HTMLElement {
   }
 
   actualizarInterfaz(arr) {
-
+    let objDatos = [
+      {titulo:"Registros", valor:arr.length, tipo:"number"}
+    ]
+    this._compCardsInfo.pintarTarjetas = objDatos;
     this._compTable.pintarDatos(arr);
-    this._compCardsInfo.setAttribute('total-cantidad', this.sumarCantidades(arr));
-    this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayPolizas.length);
+
+    // this._compCardsInfo.setAttribute('total-cantidad', this.sumarCantidades(arr));
+    // this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayPolizas.length);
   }
 
   llenarSelect(idElement, array, campoValor, campoTexto) {

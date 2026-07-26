@@ -226,9 +226,17 @@ class PlanesPage extends HTMLElement {
 
 
   actualizarInterfaz(arr) {
+
+    let objDatos = [
+      {titulo:"Total cantidad", valor:sumarCantidades(arr,"precio-anual"), tipo:"money"},
+      {titulo:"Registros", valor:arr.length, tipo:"number"}
+    ];
+
+    this._compCardsInfo.pintarTarjetas = objDatos;
     this._compTable.pintarDatos(arr);
-    this._compCardsInfo.setAttribute('total-cantidad', sumarCantidades(arr, "precio-anual"));
-    this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayPlanes.length);
+    // this._compCardsInfo.setAttribute('total-cantidad', sumarCantidades(arr, "precio-anual"));
+    // this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayPlanes.length);
+  
   }
 
 }

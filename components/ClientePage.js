@@ -77,13 +77,11 @@ class ClientePage extends HTMLElement {
             <div>
               <h2>Cliente</h2>
               <input type="text" name="client-name" id="client-name" required />
-              <!-- <label for="radio">Clic aquí</label> -->
             </div>
 
             <div>
               <h2>Fecha</h2>
               <input type="date" name="date-pago" id="date-pago" />
-              <!-- <label for="radio">Clic aquí</label> -->
             </div>
           </div>
 
@@ -92,13 +90,11 @@ class ClientePage extends HTMLElement {
             <div>
               <h2>Concepto</h2>
               <input type="text" name="concept" id="concept" required />
-              <!-- <label for="radio">Clic aquí</label> -->
             </div>
 
             <div>
               <h2>Cantidad</h2>
               <input type="number" step="0.01" name="amount" id="amount" required />
-              <!-- <label for="radio">Clic aquí</label> -->
             </div>
           </div>
         </form>
@@ -227,9 +223,16 @@ class ClientePage extends HTMLElement {
   //despues de eliminar registro o editar uno.
 
   actualizarInterfaz(arr) {
+    let objDatos = [
+      {titulo:"Total cantidad", valor:sumarCantidades(arr,"amount"), tipo:"money"},
+      {titulo:"Registros", valor:arr.length, tipo:"number"}
+    ];
+    this._compCardsInfo.pintarTarjetas = objDatos;
     this._compTable.pintarDatos(arr);
-    this._compCardsInfo.setAttribute('total-cantidad', sumarCantidades(arr, "amount"));
-    this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayClientes.length);
+
+
+    // this._compCardsInfo.setAttribute('total-cantidad', sumarCantidades(arr, "amount"));
+    // this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayClientes.length);
   }
 
 
