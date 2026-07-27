@@ -173,8 +173,10 @@ class PolizasPage extends HTMLElement {
     let form = this.shadowRoot.querySelector('form');
     let select = this.shadowRoot.querySelector('select');
 
-    this.llenarSelect("cliente",this._arrayPagos, "id", "client-name")
+    this.llenarSelect("cliente",this._arrayPagos, "id", "nombre")
     this.llenarSelect("plan", this._arrayPlanes, "id", "nombre" )
+
+
 
     // if (this._arrayPagos) {
 
@@ -285,11 +287,40 @@ class PolizasPage extends HTMLElement {
   }
 
   actualizarInterfaz(arr) {
+
+    let objPolizasTraducidas = arr.map(elemento => {
+      console.log(elemento.cliente)
+
+      // this._arrayPagos.map(elem => {
+
+      //   console.log(elemento.cliente)
+      //   if(elem.id == elemento.cliente){
+      //     console.log(elem.nombre)
+      //   }
+
+      // })
+
+      let nombreCliente = this._arrayPagos.find(elem => elem.id == elemento.cliente) ;
+      let nombrePlan = this._arrayPlanes.find(elem => elem.id == elemento.plan);
+
+      console.log(nombreCliente)
+      return {...elemento, cliente: nombreCliente ? nombreCliente.nombre : `No existe el usuario: ${elemento.cliente}` , plan : nombrePlan ? nombrePlan.nombre : `NO existe el plan: ${elemento.plan}`}
+
+      // return {...elemento, cliente:  nombreCliente?.nombre ?? `No existe el usuario: ${elemento.cliente}` , plan : nombrePlan?.nombre ?? "No existe el plan"}
+
+
+    });
+
+    console.log(objPolizasTraducidas);
+
+    console.log(this._arrayPagos)
+
     let objDatos = [
       {titulo:"Registros", valor:arr.length, tipo:"number"}
     ]
+
     this._compCardsInfo.pintarTarjetas = objDatos;
-    this._compTable.pintarDatos(arr);
+    this._compTable.pintarDatos(objPolizasTraducidas);
 
     // this._compCardsInfo.setAttribute('total-cantidad', this.sumarCantidades(arr));
     // this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayPolizas.length);
@@ -308,6 +339,8 @@ class PolizasPage extends HTMLElement {
       })
 
     }
+
+
   }
 
 }
