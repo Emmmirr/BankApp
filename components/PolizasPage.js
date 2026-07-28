@@ -173,8 +173,11 @@ class PolizasPage extends HTMLElement {
     let form = this.shadowRoot.querySelector('form');
     let select = this.shadowRoot.querySelector('select');
 
-    this.llenarSelect("cliente",this._arrayPagos, "id", "nombre")
-    this.llenarSelect("plan", this._arrayPlanes, "id", "nombre" )
+    this.llenarSelect("cliente",this._arrayPagos, "id", 
+    (elem) => `${elem.nombre} ${elem['apellido-paterno'] ?? ""} ${elem['apellido-materno'] ?? ""}`);
+    this.llenarSelect("plan", this._arrayPlanes, "id", "nombre" );
+
+    // nombreCliente?.nombre ?? `No existe el usuario: ${elemento.cliente}`
 
 
 
@@ -332,10 +335,19 @@ class PolizasPage extends HTMLElement {
       array.forEach(element => {
         const option = document.createElement('option');
         option.value = element[campoValor];
-        option.textContent = element[campoTexto];
+
+        console.log(campoTexto)
+        console.log(typeof campoTexto)
+
+        if(typeof campoTexto == "string" ){
+          option.textContent = element[campoTexto];
+        }else if(typeof campoTexto == 'function'){
+          option.textContent = campoTexto(element);
+        }else{
+            option.textContent = "Tipo de dato inválido";
+        }
 
         select.append(option);
-
       })
 
     }
