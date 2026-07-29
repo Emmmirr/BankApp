@@ -1,6 +1,7 @@
 import ClientePage from "./components/ClientePage.js";
 import PolizasPage from "./components/PolizasPage.js";
 import PlanesPage from "./components/PlanesPage.js"
+import PagosPage from "./components/PagosPage.js"
 
 const Router = {
     init: () => {
@@ -49,8 +50,7 @@ const Router = {
 
         const routes = {
             "/index": () => {
-                el = document.createElement("h1");
-                el.textContent = "Home"
+                el = document.createElement("pagos-page");
                 return el;
             },
             "/clients": () => {

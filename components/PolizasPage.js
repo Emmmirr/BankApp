@@ -16,7 +16,7 @@ class PolizasPage extends HTMLElement {
     this._modal = null;
     this._compTable - null;
     this._compCardsInfo = null;
-    this._arrayPagos = null;
+    this._arrayClientes = null;
     this._arrayPlanes = null;
   }
 
@@ -89,7 +89,7 @@ class PolizasPage extends HTMLElement {
 
           </cards-info>
         <table-datos id="table-polizas" data-lista="listaPolizas" 
-        colums="Cliente,Plan,Fecha Inicio,Fecha Fin,Estado,Precio Contratado,Fecha Emision,Acciones">
+        colums="Cliente,Plan,Fecha Inicio,Fecha Fin,Estado,Precio Contratado:Money,Fecha Emision,Acciones">
 
           <form slot="form" action="" id="formPolizas" data-table="table-polizas">
 
@@ -129,8 +129,8 @@ class PolizasPage extends HTMLElement {
               <h2>Estado</h2>
               <select name="estado" id="estado"/>
                 <option value="">Selecciona el producto</option>
-                <option value="activo">Activo</option>
-                <option value="inactivo">Inactivo</option>
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
               </select>
             </div>
 
@@ -160,10 +160,10 @@ class PolizasPage extends HTMLElement {
     this._compTable = this.shadowRoot.querySelector('table-datos');
     this._compCardsInfo = this.shadowRoot.querySelector('cards-info');
     this._arrayPolizas = comprobarDatosLocal(this._list);
-    this._arrayPagos = comprobarDatosLocal("listaPagos");
+    this._arrayClientes = comprobarDatosLocal("listaClientes");
     this._arrayPlanes = comprobarDatosLocal("listaPlanes")
 
-    console.log(this._arrayPagos)
+    console.log(this._arrayClientes)
 
     // compTable.pintarDatos(this._arrayClientes);
     // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
@@ -173,7 +173,7 @@ class PolizasPage extends HTMLElement {
     let form = this.shadowRoot.querySelector('form');
     let select = this.shadowRoot.querySelector('select');
 
-    this.llenarSelect("cliente",this._arrayPagos, "id", 
+    this.llenarSelect("cliente",this._arrayClientes, "id", 
     (elem) => `${elem.nombre} ${elem['apellido-paterno'] ?? ""} ${elem['apellido-materno'] ?? ""}`);
     this.llenarSelect("plan", this._arrayPlanes, "id", "nombre" );
 
@@ -303,11 +303,11 @@ class PolizasPage extends HTMLElement {
 
       // })
 
-      let nombreCliente = this._arrayPagos.find(elem => elem.id == elemento.cliente) ;
+      let nombreCliente = this._arrayClientes.find(elem => elem.id == elemento.cliente) ;
       let nombrePlan = this._arrayPlanes.find(elem => elem.id == elemento.plan);
 
       console.log(nombreCliente)
-      return {...elemento, cliente: nombreCliente ? nombreCliente.nombre : `No existe el usuario: ${elemento.cliente}` , plan : nombrePlan ? nombrePlan.nombre : `NO existe el plan: ${elemento.plan}`}
+      return {...elemento, cliente: nombreCliente ? nombreCliente.nombre + " " + nombreCliente['apellido-paterno'] + " " + nombreCliente['apellido-materno']  : `No existe el usuario: ${elemento.cliente}` , plan : nombrePlan ? nombrePlan.nombre : `NO existe el plan: ${elemento.plan}`}
 
       // return {...elemento, cliente:  nombreCliente?.nombre ?? `No existe el usuario: ${elemento.cliente}` , plan : nombrePlan?.nombre ?? "No existe el plan"}
 
@@ -316,7 +316,7 @@ class PolizasPage extends HTMLElement {
 
     console.log(objPolizasTraducidas);
 
-    console.log(this._arrayPagos)
+    console.log(this._arrayClientes)
 
     let objDatos = [
       {titulo:"Registros", valor:arr.length, tipo:"number"}

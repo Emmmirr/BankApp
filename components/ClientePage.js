@@ -67,10 +67,10 @@ class ClientePage extends HTMLElement {
           <cards-info>
 
           </cards-info>
-        <table-datos id="table-pagos" data-lista="listaPagos" 
+        <table-datos id="table-clientes" data-lista="listaClientes" 
         colums="Nombre,Apellido Paterno,Apellido Materno,Telefono,Acciones">
 
-          <form slot="form" action="" id="formDatos" data-table="table-pagos">
+          <form slot="form" action="" id="formDatos" data-table="table-clientes">
 
           <div class="form-section">
             <div>

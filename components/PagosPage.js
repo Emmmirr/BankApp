@@ -4,7 +4,7 @@ import FormDialog from "./FormDialog.js";
 import CardsInfo from "./CardsInfo.js"
 import { comprobarDatosLocal, guardarDatosLocal, sumarCantidades } from "./utils.js";
 
-class ClientePage extends HTMLElement {
+class PagosPage extends HTMLElement {
 
   constructor() {
     super();
@@ -68,33 +68,44 @@ class ClientePage extends HTMLElement {
 
           </cards-info>
         <table-datos id="table-pagos" data-lista="listaPagos" 
-        colums="Client Name,Date Pago,Concept,
-        Amount:Money,Acciones">
+        colums="Cliente,Plan,Monto Pagado,Fecha Pago,Metodo Pago,Acciones">
 
           <form slot="form" action="" id="formDatos" data-table="table-pagos">
 
           <div class="form-section">
             <div>
               <h2>Cliente</h2>
-              <input type="text" name="client-name" id="client-name" required />
+              <input type="text" name="cliente" id="cliente" required />
             </div>
 
             <div>
-              <h2>Fecha</h2>
-              <input type="date" name="date-pago" id="date-pago" />
+              <h2>Plan</h2>
+              <input type="text" name="plan" id="plan" />
             </div>
           </div>
 
 
           <div class="form-section">
             <div>
-              <h2>Concepto</h2>
-              <input type="text" name="concept" id="concept" required />
+              <h2>Monto Pagado</h2>
+              <input type="number" name="monto-pagado" id="monto-pagado" required />
             </div>
 
             <div>
-              <h2>Cantidad</h2>
-              <input type="number" step="0.01" name="amount" id="amount" required />
+              <h2>Fecha de pago</h2>
+              <input type="date" name="fecha-pago" id="fecha-pago" required />
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div>
+              <h2>Método de Pago</h2>
+              <input type="number" name="metodo-pago" id="metodo-pago" required />
+            </div>
+
+            <div>
+              <h2>Fecha de pago</h2>
+              <input type="date" name="fecha-pago" id="fecha-pago" required />
             </div>
           </div>
         </form>
@@ -238,6 +249,6 @@ class ClientePage extends HTMLElement {
 
 }
 
-customElements.define("cliente-page", ClientePage);
+customElements.define("pagos-page", PagosPage);
 
-export default ClientePage;
+export default PagosPage;
