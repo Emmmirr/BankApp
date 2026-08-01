@@ -100,8 +100,6 @@ class FormDialog extends HTMLElement {
     connectedCallback() {
         this.render();
 
-
-
         setTimeout(() => {
             let dialog = this.shadowRoot.getElementById('miDialogo');
             let btn = this.shadowRoot.querySelector('#cerrar')
@@ -123,21 +121,12 @@ class FormDialog extends HTMLElement {
                     composed: true,
                 }));
             });
-
-
-
         }, 0);
-
-
-
     }
 
     static get observedAttributes() {
         return ['btn-text'];
     }
-
-
-
 
     attributeChangedCallback(name, oldValue, newValue) {
 
@@ -148,11 +137,7 @@ class FormDialog extends HTMLElement {
         if (btnGuardar) {
             btnGuardar.textContent = this.getAttribute('btn-text');
         }
-
     }
-
-
-
 }
 
 

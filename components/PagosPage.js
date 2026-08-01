@@ -156,18 +156,25 @@ class PagosPage extends HTMLElement {
 
     let form = this.shadowRoot.querySelector('form');
 
+    
+
     this.llenarSelect("cliente", this._arrayPolizas, "id",
       (elem) => {
         console.log(elem)
         console.log(this._arrayClientes)
 
-        return this._arrayClientes.find(cliente => cliente.id == elem.cliente)?.nombre ?? "No existe el usuario";
+        let cliente = this._arrayClientes.find(cliente => cliente.id == elem.cliente)?.nombre ?? "No existe el cliente";
 
+        let plan = this._arrayPlanes.find(plan => plan.id == elem.plan)?.nombre ?? "No existe el plan"; 
+
+        return  `cliente - plan`;
 
       });
+
+      
     // this.llenarSelect("plan", this._arrayPlanes, "id", "nombre" );
 
-
+1
     this.addEventListener('click-guardar', () => {
       if (form.reportValidity()) {
         let formData = new FormData(form);
@@ -264,7 +271,7 @@ class PagosPage extends HTMLElement {
 
     })
 
-  }length
+  }
 
 
 

@@ -163,7 +163,9 @@ class PolizasPage extends HTMLElement {
     this._arrayClientes = comprobarDatosLocal("listaClientes");
     this._arrayPlanes = comprobarDatosLocal("listaPlanes")
 
-    console.log(this._arrayClientes)
+    let form = this.shadowRoot.querySelector('form');
+    let select = this.shadowRoot.querySelector('select');
+
 
     // compTable.pintarDatos(this._arrayClientes);
     // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
@@ -175,8 +177,7 @@ class PolizasPage extends HTMLElement {
       return date;
     }))
 
-    let form = this.shadowRoot.querySelector('form');
-    let select = this.shadowRoot.querySelector('select');
+
 
     this.llenarSelect("cliente", this._arrayClientes, "id",
       (elem) => `${elem.nombre} ${elem['apellido-paterno'] ?? ""} ${elem['apellido-materno'] ?? ""}`);
