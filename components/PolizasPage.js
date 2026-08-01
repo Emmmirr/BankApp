@@ -3,7 +3,7 @@ import TableDatos from "./TableDatos.js";
 import FormDialog from "./FormDialog.js";
 import CardsInfo from "./CardsInfo.js"
 
-import { comprobarDatosLocal, guardarDatosLocal } from "./utils.js";
+import { comprobarDatosLocal, formatearValorMoneda, guardarDatosLocal } from "./utils.js";
 
 class PolizasPage extends HTMLElement {
 
@@ -136,7 +136,7 @@ class PolizasPage extends HTMLElement {
 
             <div>
               <h2>Precio Contratado</h2>
-              <input type="number" step="0.01" name="precio-contratado" id="precio-contratado" required />
+              <input readonly type="number" name="precio-contratado" id="precio-contratado" required />
             </div>
           </div>
 
@@ -169,13 +169,35 @@ class PolizasPage extends HTMLElement {
     // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
     this.actualizarInterfaz(this._arrayPolizas);
+    console.log(this._arrayPolizas.map(elemento => {
+      let date = new Date(elemento['fecha-inicio'])
+
+      return date;
+    }))
 
     let form = this.shadowRoot.querySelector('form');
     let select = this.shadowRoot.querySelector('select');
 
-    this.llenarSelect("cliente",this._arrayClientes, "id", 
-    (elem) => `${elem.nombre} ${elem['apellido-paterno'] ?? ""} ${elem['apellido-materno'] ?? ""}`);
-    this.llenarSelect("plan", this._arrayPlanes, "id", "nombre" );
+    this.llenarSelect("cliente", this._arrayClientes, "id",
+      (elem) => `${elem.nombre} ${elem['apellido-paterno'] ?? ""} ${elem['apellido-materno'] ?? ""}`);
+    this.llenarSelect("plan", this._arrayPlanes, "id", "nombre");
+
+    const selectPlan = this.shadowRoot.querySelector('#plan');
+    const inputPrecio = this.shadowRoot.querySelector('#precio-contratado')
+
+    selectPlan.addEventListener("change", (e) => {
+
+      let plan = this._arrayPlanes.find(plan => plan.id == e.target.value);
+
+      inputPrecio.value = plan ? plan['precio-anual'] : "";
+
+      // if (plan) {
+      //   inputPrecio.value = plan['precio-anual'];
+      // } else {
+      //   inputPrecio.value = "";
+      // }
+
+    });
 
     // nombreCliente?.nombre ?? `No existe el usuario: ${elemento.cliente}`
 
@@ -303,11 +325,11 @@ class PolizasPage extends HTMLElement {
 
       // })
 
-      let nombreCliente = this._arrayClientes.find(elem => elem.id == elemento.cliente) ;
+      let nombreCliente = this._arrayClientes.find(elem => elem.id == elemento.cliente);
       let nombrePlan = this._arrayPlanes.find(elem => elem.id == elemento.plan);
 
       console.log(nombreCliente)
-      return {...elemento, cliente: nombreCliente ? nombreCliente.nombre + " " + nombreCliente['apellido-paterno'] + " " + nombreCliente['apellido-materno']  : `No existe el usuario: ${elemento.cliente}` , plan : nombrePlan ? nombrePlan.nombre : `NO existe el plan: ${elemento.plan}`}
+      return { ...elemento, cliente: nombreCliente ? nombreCliente.nombre + " " + nombreCliente['apellido-paterno'] + " " + nombreCliente['apellido-materno'] : `No existe el usuario: ${elemento.cliente}`, plan: nombrePlan ? nombrePlan.nombre : `NO existe el plan: ${elemento.plan}` }
 
       // return {...elemento, cliente:  nombreCliente?.nombre ?? `No existe el usuario: ${elemento.cliente}` , plan : nombrePlan?.nombre ?? "No existe el plan"}
 
@@ -319,7 +341,7 @@ class PolizasPage extends HTMLElement {
     console.log(this._arrayClientes)
 
     let objDatos = [
-      {titulo:"Registros", valor:arr.length, tipo:"number"}
+      { titulo: "Registros", valor: arr.length, tipo: "number" }
     ]
 
     this._compCardsInfo.pintarTarjetas = objDatos;
@@ -339,12 +361,12 @@ class PolizasPage extends HTMLElement {
         console.log(campoTexto)
         console.log(typeof campoTexto)
 
-        if(typeof campoTexto == "string" ){
+        if (typeof campoTexto == "string") {
           option.textContent = element[campoTexto];
-        }else if(typeof campoTexto == 'function'){
+        } else if (typeof campoTexto == 'function') {
           option.textContent = campoTexto(element);
-        }else{
-            option.textContent = "Tipo de dato inválido";
+        } else {
+          option.textContent = "Tipo de dato inválido";
         }
 
         select.append(option);

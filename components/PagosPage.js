@@ -15,6 +15,10 @@ class PagosPage extends HTMLElement {
     this._modal = null;
     this._compTable - null;
     this._compCardsInfo = null;
+    this._arrayPagos = null;
+    this._arrayPolizas = null;
+    this._arrayPlanes = null;
+    this._arrayClientes = null;
   }
 
   render() {
@@ -32,7 +36,7 @@ class PagosPage extends HTMLElement {
               gap: 100px;
             }
 
-                                .form-section {
+            .form-section {
                 display: flex;
                 gap: 35px;
                 width: 100%;
@@ -52,9 +56,27 @@ class PagosPage extends HTMLElement {
                     }
                 }
 
+                select {
+
+                    height: 35px;
+                    width: 250px;
+                    max-width: 300px;
+                    border-radius: 4px;
+                    background: hsl(0, 0%, 97%);
+                    border: 1px solid hsl(0, 0%, 80%);
+                    padding: 10px;
+                
+                }
+
                 h2 {
                     font-size: 15px;
-                    font-weight: normal
+                    font-weight: normal;
+                }
+
+                label {
+                display: block;
+                  font-size: 15px;
+                  font-weight: normal;
                 }
             }
 
@@ -68,14 +90,17 @@ class PagosPage extends HTMLElement {
 
           </cards-info>
         <table-datos id="table-pagos" data-lista="listaPagos" 
-        colums="Cliente,Plan,Monto Pagado,Fecha Pago,Metodo Pago,Acciones">
+        colums="Cliente,Plan,Monto Pagado,Fecha Pago,Fecha Vencimiento,Metodo Pago,Acciones">
 
           <form slot="form" action="" id="formDatos" data-table="table-pagos">
 
           <div class="form-section">
             <div>
-              <h2>Cliente</h2>
-              <input type="text" name="cliente" id="cliente" required />
+              <label for="cliente">Cliente:</label>
+              
+              <select name="cliente" id="cliente">
+                <option value="">Selecciona el cliente</option>
+              </select>
             </div>
 
             <div>
@@ -99,13 +124,13 @@ class PagosPage extends HTMLElement {
 
           <div class="form-section">
             <div>
-              <h2>Método de Pago</h2>
-              <input type="number" name="metodo-pago" id="metodo-pago" required />
+              <h2>Fecha de Vencimiento</h2>
+              <input type="date" name="fecha-vencimiento" id="fecha-vencimiento" required />
             </div>
 
             <div>
-              <h2>Fecha de pago</h2>
-              <input type="date" name="fecha-pago" id="fecha-pago" required />
+              <h2>Método de pago</h2>
+              <input type="number" name="metodo-pago" id="metodo-pago" required />
             </div>
           </div>
         </form>
@@ -119,14 +144,28 @@ class PagosPage extends HTMLElement {
     this._list = this.shadowRoot.querySelector('table-datos').dataset.lista;
     this._compTable = this.shadowRoot.querySelector('table-datos');
     this._compCardsInfo = this.shadowRoot.querySelector('cards-info');
-    this._arrayClientes = comprobarDatosLocal(this._list);
+    this._arrayPagos = comprobarDatosLocal(this._list);
+    this._arrayClientes = comprobarDatosLocal("listaClientes")
+    this._arrayPolizas = comprobarDatosLocal("listaPolizas");
+    this._arrayPlanes = comprobarDatosLocal("listaPlanes")
 
     // compTable.pintarDatos(this._arrayClientes);
     // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
-    this.actualizarInterfaz(this._arrayClientes);
+    this.actualizarInterfaz(this._arrayPagos);
 
     let form = this.shadowRoot.querySelector('form');
+
+    this.llenarSelect("cliente", this._arrayPolizas, "id",
+      (elem) => {
+        console.log(elem)
+        console.log(this._arrayClientes)
+
+        return this._arrayClientes.find(cliente => cliente.id == elem.cliente)?.nombre ?? "No existe el usuario";
+
+
+      });
+    // this.llenarSelect("plan", this._arrayPlanes, "id", "nombre" );
 
 
     this.addEventListener('click-guardar', () => {
@@ -140,19 +179,19 @@ class PagosPage extends HTMLElement {
         console.log(objForm)
 
         if (this._filaEnEdicion) {
-          let filaIndex = this._arrayClientes.findIndex(elem => elem.id == +this._filaEnEdicion)
+          let filaIndex = this._arrayPagos.findIndex(elem => elem.id == +this._filaEnEdicion)
           objForm.id = this._filaEnEdicion;
-          this._arrayClientes[filaIndex] = objForm;
+          this._arrayPagos[filaIndex] = objForm;
         } else {
           objForm.id = Date.now();
-          this._arrayClientes.push(objForm)
+          this._arrayPagos.push(objForm)
         }
 
-        guardarDatosLocal(this._list, this._arrayClientes);
+        guardarDatosLocal(this._list, this._arrayPagos);
         // compTable.pintarDatos(this._arrayClientes);
         // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
-        this.actualizarInterfaz(this._arrayClientes);
+        this.actualizarInterfaz(this._arrayPagos);
 
         this._compTable.cerrarModal();
       }
@@ -189,21 +228,21 @@ class PagosPage extends HTMLElement {
       let btnAccion = e.detail.btnData;
 
       if (btnAccion == "eliminar") {
-        let filaIndex = this._arrayClientes.findIndex(elem => elem.id == +filaId);
+        let filaIndex = this._arrayPagos.findIndex(elem => elem.id == +filaId);
 
-        this._arrayClientes.splice(filaIndex, 1);
-        guardarDatosLocal(this._list, this._arrayClientes);
+        this._arrayPagos.splice(filaIndex, 1);
+        guardarDatosLocal(this._list, this._arrayPagos);
         console.log("Boton eliminar pulsado")
-        console.log(this._arrayClientes)
+        console.log(this._arrayPagos)
         // compTable.pintarDatos(this._arrayClientes);
         // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
-        this.actualizarInterfaz(this._arrayClientes);
+        this.actualizarInterfaz(this._arrayPagos);
       }
 
       if (btnAccion == "editar") {
 
         this._filaEnEdicion = filaId;
-        let filaEditar = this._arrayClientes.find(elem => elem.id == +filaId);
+        let filaEditar = this._arrayPagos.find(elem => elem.id == +filaId);
         Object.entries(filaEditar).forEach(([key, value]) => {
 
           if (key == "id") return;
@@ -225,7 +264,7 @@ class PagosPage extends HTMLElement {
 
     })
 
-  }
+  }length
 
 
 
@@ -235,8 +274,8 @@ class PagosPage extends HTMLElement {
 
   actualizarInterfaz(arr) {
     let objDatos = [
-      {titulo:"Total cantidad", valor:sumarCantidades(arr,"amount"), tipo:"money"},
-      {titulo:"Registros", valor:arr.length, tipo:"number"}
+      { titulo: "Total cantidad", valor: sumarCantidades(arr, "amount"), tipo: "money" },
+      { titulo: "Registros", valor: arr.length, tipo: "number" }
     ];
     this._compCardsInfo.pintarTarjetas = objDatos;
     this._compTable.pintarDatos(arr);
@@ -244,6 +283,32 @@ class PagosPage extends HTMLElement {
 
     // this._compCardsInfo.setAttribute('total-cantidad', sumarCantidades(arr, "amount"));
     // this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayClientes.length);
+  }
+
+  llenarSelect(idElement, array, campoValor, campoTexto) {
+    if (array) {
+      const select = this.shadowRoot.getElementById(idElement);
+      array.forEach(element => {
+        const option = document.createElement('option');
+        option.value = element[campoValor];
+
+        console.log(campoTexto)
+        console.log(typeof campoTexto)
+
+        if (typeof campoTexto == "string") {
+          option.textContent = element[campoTexto];
+        } else if (typeof campoTexto == 'function') {
+          option.textContent = campoTexto(element);
+        } else {
+          option.textContent = "Tipo de dato inválido";
+        }
+
+        select.append(option);
+      })
+
+    }
+
+
   }
 
 
