@@ -331,7 +331,6 @@ class PolizasPage extends HTMLElement {
 
       console.log(nombreCliente)
       return { ...elemento, cliente: nombreCliente ? nombreCliente.nombre + " " + nombreCliente['apellido-paterno'] + " " + nombreCliente['apellido-materno'] : `No existe el usuario: ${elemento.cliente}`, plan: nombrePlan ? nombrePlan.nombre : `NO existe el plan: ${elemento.plan}` }
-
       // return {...elemento, cliente:  nombreCliente?.nombre ?? `No existe el usuario: ${elemento.cliente}` , plan : nombrePlan?.nombre ?? "No existe el plan"}
 
 

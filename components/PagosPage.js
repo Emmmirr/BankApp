@@ -19,6 +19,9 @@ class PagosPage extends HTMLElement {
     this._arrayPolizas = null;
     this._arrayPlanes = null;
     this._arrayClientes = null;
+    this._clientesIndex = null;
+    this._planesIndex = null;
+    this._polizasIndex = null;
   }
 
   render() {
@@ -90,16 +93,16 @@ class PagosPage extends HTMLElement {
 
           </cards-info>
         <table-datos id="table-pagos" data-lista="listaPagos" 
-        colums="Cliente,Plan,Monto Pagado,Fecha Pago,Fecha Vencimiento,Metodo Pago,Acciones">
+        colums="Poliza,Plan,Monto Pagado,Fecha Pago,Fecha Vencimiento,Metodo Pago,Acciones">
 
           <form slot="form" action="" id="formDatos" data-table="table-pagos">
 
           <div class="form-section">
             <div>
-              <label for="cliente">Cliente:</label>
+              <label for="poliza">Póliza:</label>
               
-              <select name="cliente" id="cliente">
-                <option value="">Selecciona el cliente</option>
+              <select name="poliza" id="poliza">
+                <option value="">Selecciona la póliza</option>
               </select>
             </div>
 
@@ -130,7 +133,7 @@ class PagosPage extends HTMLElement {
 
             <div>
               <h2>Método de pago</h2>
-              <input type="number" name="metodo-pago" id="metodo-pago" required />
+              <input type="text" name="metodo-pago" id="metodo-pago" required />
             </div>
           </div>
         </form>
@@ -152,36 +155,59 @@ class PagosPage extends HTMLElement {
     // compTable.pintarDatos(this._arrayClientes);
     // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
-    this.actualizarInterfaz(this._arrayPagos);
+
 
     let form = this.shadowRoot.querySelector('form');
 
-    
+    this._polizasIndex = this._arrayPolizas.reduce((acc, poliza) => {
+      acc[poliza.id] = poliza;
+      return acc;
+    }, {}); 
 
-    this.llenarSelect("cliente", this._arrayPolizas, "id",
-      (elem) => {
-        console.log(elem)
-        console.log(this._arrayClientes)
+    console.log(this._polizasIndex)
 
-        let cliente = this._arrayClientes.find(cliente => cliente.id == elem.cliente)?.nombre ?? "No existe el cliente";
+    this._clientesIndex = this._arrayClientes.reduce((acc, cliente) => {
+      acc[cliente.id] = cliente.nombre;
+      return acc;
+    }, {});
 
-        let plan = this._arrayPlanes.find(plan => plan.id == elem.plan)?.nombre ?? "No existe el plan"; 
+    this._planesIndex = this._arrayPlanes.reduce((acc, plan) => {
+      acc[plan.id] = plan.nombre;
 
-        return  `cliente - plan`;
+      return acc;
+    }, {});
 
-      });
 
-      
+    this.llenarSelect("poliza", this._arrayPolizas, "id", (elem) => {
+      let cliente = this._clientesIndex[elem.cliente] ?? "No existe el cliente";
+      let plan = this._planesIndex[elem.plan] ?? "No existe el plan";
+
+      return `${cliente} - ${plan}`
+    })
+
+    // this.llenarSelect("cliente", this._arrayPolizas, "id",
+    //   (elem) => {
+    //     console.log(elem)
+    //     console.log(this._arrayClientes)
+
+    //     let cliente = this._arrayClientes.find(cliente => cliente.id == elem.cliente)?.nombre ?? "No existe el cliente";
+
+    //     let plan = this._arrayPlanes.find(plan => plan.id == elem.plan)?.nombre ?? "No existe el plan"; 
+
+    //     return  `cliente - plan`;
+
+    //   });
+
+
     // this.llenarSelect("plan", this._arrayPlanes, "id", "nombre" );
 
-1
+
     this.addEventListener('click-guardar', () => {
       if (form.reportValidity()) {
         let formData = new FormData(form);
 
-        let objForm = Object.fromEntries(formData.entries());
 
-        objForm.amount = +objForm.amount;
+        let objForm = Object.fromEntries(formData.entries());
 
         console.log(objForm)
 
@@ -271,6 +297,8 @@ class PagosPage extends HTMLElement {
 
     })
 
+        this.actualizarInterfaz(this._arrayPagos);
+
   }
 
 
@@ -281,11 +309,30 @@ class PagosPage extends HTMLElement {
 
   actualizarInterfaz(arr) {
     let objDatos = [
-      { titulo: "Total cantidad", valor: sumarCantidades(arr, "amount"), tipo: "money" },
+      { titulo: "Total cantidad", valor: sumarCantidades(arr, "monto-pagado"), tipo: "money" },
       { titulo: "Registros", valor: arr.length, tipo: "number" }
     ];
+
+    let objPagosTraducidos = arr.map(pago => {
+
+      console.log(this._polizasIndex)
+
+      let poliza = this._polizasIndex[pago?.poliza];
+
+
+      let cliente = this._clientesIndex[poliza?.cliente];
+      let plan = this._planesIndex[poliza?.plan];
+
+
+      console.log(poliza)
+      console.log(cliente)
+      console.log(plan)
+
+      return {...pago, poliza: cliente ?? "No existe el cliente", plan: plan ?? "No existe el plan"}
+       
+    })
     this._compCardsInfo.pintarTarjetas = objDatos;
-    this._compTable.pintarDatos(arr);
+    this._compTable.pintarDatos(objPagosTraducidos);
 
 
     // this._compCardsInfo.setAttribute('total-cantidad', sumarCantidades(arr, "amount"));
