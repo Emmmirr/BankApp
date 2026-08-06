@@ -170,7 +170,7 @@ class PolizasPage extends HTMLElement {
     // compTable.pintarDatos(this._arrayClientes);
     // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
-    this.actualizarInterfaz(this._arrayPolizas);
+
     console.log(this._arrayPolizas.map(elemento => {
       let date = new Date(elemento['fecha-inicio'])
 
@@ -302,6 +302,8 @@ class PolizasPage extends HTMLElement {
 
       }
     })
+
+        this.actualizarInterfaz(this._arrayPolizas);
 
   }
 

@@ -151,13 +151,14 @@ class PagosPage extends HTMLElement {
     this._arrayClientes = comprobarDatosLocal("listaClientes")
     this._arrayPolizas = comprobarDatosLocal("listaPolizas");
     this._arrayPlanes = comprobarDatosLocal("listaPlanes")
+    const selectPoliza = this.shadowRoot.querySelector('#poliza'); 
+    const inputPlan = this.shadowRoot.querySelector('#plan');
+    let form = this.shadowRoot.querySelector('form');
+
 
     // compTable.pintarDatos(this._arrayClientes);
     // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
-
-
-    let form = this.shadowRoot.querySelector('form');
 
     this._polizasIndex = this._arrayPolizas.reduce((acc, poliza) => {
       acc[poliza.id] = poliza;
@@ -184,6 +185,18 @@ class PagosPage extends HTMLElement {
 
       return `${cliente} - ${plan}`
     })
+
+    selectPoliza.addEventListener("change", (e) => {
+
+      let poliza = this._polizasIndex[e.target.value];
+      let plan = poliza ? this._planesIndex[poliza.plan] : "";
+
+      inputPlan.value = plan;
+
+
+      console.log(poliza)
+      console.log(plan)
+    });
 
     // this.llenarSelect("cliente", this._arrayPolizas, "id",
     //   (elem) => {
@@ -290,12 +303,10 @@ class PagosPage extends HTMLElement {
         this._modal.showModal();
 
       }
-
-
-
-
-
     })
+
+
+
 
         this.actualizarInterfaz(this._arrayPagos);
 
