@@ -108,7 +108,7 @@ class PagosPage extends HTMLElement {
 
             <div>
               <h2>Plan</h2>
-              <input type="text" name="plan" id="plan" />
+              <input readonly type="text" name="plan" id="plan" />
             </div>
           </div>
 
@@ -116,7 +116,7 @@ class PagosPage extends HTMLElement {
           <div class="form-section">
             <div>
               <h2>Monto Pagado</h2>
-              <input type="number" name="monto-pagado" id="monto-pagado" required />
+              <input readonly type="text" name="monto-pagado" id="monto-pagado" required />
             </div>
 
             <div>
@@ -153,6 +153,7 @@ class PagosPage extends HTMLElement {
     this._arrayPlanes = comprobarDatosLocal("listaPlanes")
     const selectPoliza = this.shadowRoot.querySelector('#poliza'); 
     const inputPlan = this.shadowRoot.querySelector('#plan');
+    const inputMontoPagado = this.shadowRoot.querySelector('#monto-pagado');
     let form = this.shadowRoot.querySelector('form');
 
 
@@ -173,7 +174,7 @@ class PagosPage extends HTMLElement {
     }, {});
 
     this._planesIndex = this._arrayPlanes.reduce((acc, plan) => {
-      acc[plan.id] = plan.nombre;
+      acc[plan.id] = plan;
 
       return acc;
     }, {});
@@ -181,17 +182,21 @@ class PagosPage extends HTMLElement {
 
     this.llenarSelect("poliza", this._arrayPolizas, "id", (elem) => {
       let cliente = this._clientesIndex[elem.cliente] ?? "No existe el cliente";
-      let plan = this._planesIndex[elem.plan] ?? "No existe el plan";
+      let plan = this._planesIndex[elem.plan].nombre ?? "No existe el plan";
 
       return `${cliente} - ${plan}`
     })
 
     selectPoliza.addEventListener("change", (e) => {
 
+      console.log(this._planesIndex)
+
       let poliza = this._polizasIndex[e.target.value];
-      let plan = poliza ? this._planesIndex[poliza.plan] : "";
+      let plan = poliza ? this._planesIndex[poliza.plan].nombre : "";
+      let montoPlan = poliza ? this._planesIndex[poliza.plan]["precio-anual"] : "";
 
       inputPlan.value = plan;
+      inputMontoPagado.value = montoPlan;
 
 
       console.log(poliza)
