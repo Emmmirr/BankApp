@@ -151,9 +151,10 @@ class PagosPage extends HTMLElement {
     this._arrayClientes = comprobarDatosLocal("listaClientes")
     this._arrayPolizas = comprobarDatosLocal("listaPolizas");
     this._arrayPlanes = comprobarDatosLocal("listaPlanes")
-    const selectPoliza = this.shadowRoot.querySelector('#poliza'); 
+    const selectPoliza = this.shadowRoot.querySelector('#poliza');
     const inputPlan = this.shadowRoot.querySelector('#plan');
     const inputMontoPagado = this.shadowRoot.querySelector('#monto-pagado');
+    const inputFechaVencimiento = this.shadowRoot.querySelector('#fecha-vencimiento');
     let form = this.shadowRoot.querySelector('form');
 
 
@@ -164,7 +165,7 @@ class PagosPage extends HTMLElement {
     this._polizasIndex = this._arrayPolizas.reduce((acc, poliza) => {
       acc[poliza.id] = poliza;
       return acc;
-    }, {}); 
+    }, {});
 
     console.log(this._polizasIndex)
 
@@ -199,8 +200,20 @@ class PagosPage extends HTMLElement {
       let plan = planObj?.nombre ?? "";
       let montoPlan = planObj?.["precio-anual"] ?? "";
 
+      if (poliza) {
+        let fechaVencimiento = new Date(poliza?.['fecha-emision']);
+        fechaVencimiento.setUTCDate(fechaVencimiento.getUTCDate() + 10);
+        inputFechaVencimiento.value = fechaVencimiento.toISOString().slice(0, 10);
+      }else{
+        inputFechaVencimiento.value = "";
+      }
+
+
+
+
       inputPlan.value = plan;
       inputMontoPagado.value = montoPlan;
+
 
       console.log(poliza);
       console.log(idPlan);
@@ -319,7 +332,7 @@ class PagosPage extends HTMLElement {
 
 
 
-        this.actualizarInterfaz(this._arrayPagos);
+    this.actualizarInterfaz(this._arrayPagos);
 
   }
 
@@ -350,8 +363,8 @@ class PagosPage extends HTMLElement {
       console.log(cliente)
       console.log(plan)
 
-      return {...pago, poliza: cliente ?? "No existe el cliente", plan: plan ?? "No existe el plan"}
-       
+      return { ...pago, poliza: cliente ?? "No existe el cliente", plan: plan ?? "No existe el plan" }
+
     })
     this._compCardsInfo.pintarTarjetas = objDatos;
     this._compTable.pintarDatos(objPagosTraducidos);
