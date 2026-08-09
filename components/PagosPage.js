@@ -191,16 +191,22 @@ class PagosPage extends HTMLElement {
 
       console.log(this._planesIndex)
 
+      //Evita errores cuando la póliza o plan no existen
+      //mostrando valores vacíos para el caso correspondiente
       let poliza = this._polizasIndex[e.target.value];
-      let plan = poliza ? this._planesIndex[poliza.plan].nombre : "";
-      let montoPlan = poliza ? this._planesIndex[poliza.plan]["precio-anual"] : "";
+      let idPlan = poliza?.plan;
+      let planObj = poliza ? this._planesIndex[idPlan] : null;
+      let plan = planObj?.nombre ?? "";
+      let montoPlan = planObj?.["precio-anual"] ?? "";
 
       inputPlan.value = plan;
       inputMontoPagado.value = montoPlan;
 
-
-      console.log(poliza)
-      console.log(plan)
+      console.log(poliza);
+      console.log(idPlan);
+      console.log(planObj);
+      console.log(plan);
+      console.log(montoPlan)
     });
 
     // this.llenarSelect("cliente", this._arrayPolizas, "id",
@@ -337,7 +343,7 @@ class PagosPage extends HTMLElement {
 
 
       let cliente = this._clientesIndex[poliza?.cliente];
-      let plan = this._planesIndex[poliza?.plan];
+      let plan = this._planesIndex[poliza?.plan].nombre;
 
 
       console.log(poliza)
