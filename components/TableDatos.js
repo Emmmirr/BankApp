@@ -143,27 +143,27 @@ width: 10px;
       <table id="${idTable}" data-lista="${dataTable}">
         <colgroup>
           ${arrayColums.map(column => {
-    return "<col />"
-  }).join("")}
+      return "<col />"
+    }).join("")}
         </colgroup>
 
         <thead>
           <tr>
           ${arrayColums.map(column => {
-            let nombre;
-            let tipo = "";
+      let nombre;
+      let tipo = "";
 
-          if (column.includes(":")) {
-            
-          [nombre, tipo] = column.trim().split(':');
+      if (column.includes(":")) {
 
-          console.log(nombre, tipo);
-          }else{
-            nombre = column;
-          }
+        [nombre, tipo] = column.trim().split(':');
+
+        console.log(nombre, tipo);
+      } else {
+        nombre = column;
+      }
       return `<th data-name-col="${nombre.trim().toLowerCase().split(" ").join("-")}" data-type="${tipo}"> ${nombre.trim()} </th>`
     }).join("")
-  }
+      }
 
           </tr >
         </thead >
@@ -186,6 +186,8 @@ width: 10px;
     this.render();
 
     let table = this.shadowRoot.querySelector('table');
+    let elementoFormDialog = this.shadowRoot.querySelector('form-dialog');
+    console.log(elementoFormDialog)
 
     console.log(table)
 
@@ -212,27 +214,41 @@ width: 10px;
 
     this.addEventListener('open-modal', (e) => {
       this._modalExterno = e.detail.value;
-      this._btnCerrar = e.detail.boton;
+      // this._btnCerrar = e.detail.boton;
 
-
-      if (this._btnCerrar) {
-        this._btnCerrar.addEventListener('click', () => {
-          this._modalExterno.close();
-        })
-      }
+      // if (this._btnCerrar) {
+      //   this._btnCerrar.addEventListener('click', () => {
+      //     this._modalExterno.close();
+      //   })
+      // }
       console.log(this._modalExterno)
       console.log(this._btnCerrar)
     })
 
+
+
+
+
     this.shadowRoot.querySelector('#abrir').addEventListener('click', () => {
-      if (this._modalExterno) {
-        this._modalExterno.showModal();
-      } else {
-        console.log("Error")
-      }
+      // if (this._modalExterno) {
+      //   this._modalExterno.showModal();
+      // } else {
+      //   console.log("Error")
+      // }
+
+      console.log('Click nuevo registro')
+      this.dispatchEvent(new CustomEvent('click-form-dialog', {
+        bubbles: true,
+        composed: true,
+      }));
+
     })
 
 
+  }
+
+  getModal() {
+    return this.shadowRoot.querySelector('form-dialog');
   }
 
 
@@ -308,7 +324,7 @@ width: 10px;
         celda.append(div);
       } else {
 
-        if (columnaType.toLowerCase() == "money" ) {
+        if (columnaType.toLowerCase() == "money") {
 
           celda.textContent = formatearValorMoneda(valor);
           celda.dataset.valorOriginal = valor;

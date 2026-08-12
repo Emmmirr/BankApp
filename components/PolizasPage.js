@@ -165,11 +165,13 @@ class PolizasPage extends HTMLElement {
 
     let form = this.shadowRoot.querySelector('form');
     let select = this.shadowRoot.querySelector('select');
+    const selectPlan = this.shadowRoot.querySelector('#plan');
+    const inputPrecio = this.shadowRoot.querySelector('#precio-contratado');
+    const inputFechaEmision = this.shadowRoot.querySelector("#fecha-emision");
 
 
     // compTable.pintarDatos(this._arrayClientes);
     // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
-
 
     console.log(this._arrayPolizas.map(elemento => {
       let date = new Date(elemento['fecha-inicio'])
@@ -177,14 +179,10 @@ class PolizasPage extends HTMLElement {
       return date;
     }))
 
-
-
     this.llenarSelect("cliente", this._arrayClientes, "id",
       (elem) => `${elem.nombre} ${elem['apellido-paterno'] ?? ""} ${elem['apellido-materno'] ?? ""}`);
     this.llenarSelect("plan", this._arrayPlanes, "id", "nombre");
 
-    const selectPlan = this.shadowRoot.querySelector('#plan');
-    const inputPrecio = this.shadowRoot.querySelector('#precio-contratado')
 
     selectPlan.addEventListener("change", (e) => {
 
@@ -219,7 +217,6 @@ class PolizasPage extends HTMLElement {
 
     console.log(select)
 
-
     this.addEventListener('click-guardar', () => {
 
       if (form.reportValidity()) {
@@ -247,8 +244,6 @@ class PolizasPage extends HTMLElement {
         this.actualizarInterfaz(this._arrayPolizas);
         this._compTable.cerrarModal();
       }
-
-
     });
 
     this.addEventListener('open-modal', (e) => {
@@ -256,6 +251,7 @@ class PolizasPage extends HTMLElement {
       this._modal = e.detail.value;
 
       if (this._modal) {
+
         this._modal.addEventListener('close', () => {
           form.reset();
 
@@ -263,9 +259,22 @@ class PolizasPage extends HTMLElement {
             this._filaEnEdicion = null;
             this._compTable.setBtnText('Guardar');
           }
-        })
+        });
       }
-    })
+    });
+
+    this.addEventListener('click-form-dialog', () => {
+      inputFechaEmision.valueAsDate = new Date();
+      this._compTable.getModal().show();
+    });
+
+    this.addEventListener('modal-cerrado', () => {
+      form.reset();
+      if (this._filaEnEdicion) {
+        this._filaEnEdicion = null;
+        this._compTable.setBtnText('Guardar');
+      }
+    });
 
     this.addEventListener('tabla-click', (e) => {
       let fila = e.detail.fila;
@@ -298,12 +307,12 @@ class PolizasPage extends HTMLElement {
         });
 
         this._compTable.setBtnText('Actualizar');
-        this._modal.showModal();
+        this._compTable.getModal().show();
 
       }
     })
 
-        this.actualizarInterfaz(this._arrayPolizas);
+    this.actualizarInterfaz(this._arrayPolizas);
 
   }
 

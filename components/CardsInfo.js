@@ -64,7 +64,6 @@ class CardsInfo extends HTMLElement {
     }
 
     set pintarTarjetas(array) {
-     
         this._arrayDatosTarjetas = array;
         this.render();
     }

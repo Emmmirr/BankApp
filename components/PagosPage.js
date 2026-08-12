@@ -200,6 +200,8 @@ class PagosPage extends HTMLElement {
       let plan = planObj?.nombre ?? "";
       let montoPlan = planObj?.["precio-anual"] ?? "";
 
+      //Mostramos la fecha del pago de la póliza 
+      //sin que los horarios locales afecten a la fecha
       if (poliza) {
         let fechaVencimiento = new Date(poliza?.['fecha-emision']);
         fechaVencimiento.setUTCDate(fechaVencimiento.getUTCDate() + 10);
@@ -208,12 +210,8 @@ class PagosPage extends HTMLElement {
         inputFechaVencimiento.value = "";
       }
 
-
-
-
       inputPlan.value = plan;
       inputMontoPagado.value = montoPlan;
-
 
       console.log(poliza);
       console.log(idPlan);
