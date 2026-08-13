@@ -100,11 +100,16 @@ class FormDialog extends HTMLElement {
     connectedCallback() {
         this.render();
 
-
             let dialog = this.shadowRoot.getElementById('miDialogo');
             let btnCerrar = this.shadowRoot.querySelector('#cerrar')
             let btnGuardar = this.shadowRoot.querySelector('#boton-guardar')
 
+            dialog.addEventListener("click", (e) => {
+                console.log(e.target)
+                if(e.target == dialog){
+                    dialog.close();
+                }
+            });
 
             btnCerrar.addEventListener("click", () => {
                 dialog.close();
@@ -116,7 +121,6 @@ class FormDialog extends HTMLElement {
                     composed:true,
                 }));
             });
-
 
             // this.dispatchEvent(new CustomEvent('open-modal', {
             //     bubbles: true,
@@ -133,14 +137,16 @@ class FormDialog extends HTMLElement {
                     composed: true,
                 }));
             });
-
-
-
     }
 
     show() {
         let dialog = this.shadowRoot.getElementById('miDialogo');
         dialog.showModal();
+    }
+
+    close() {
+        let dialog = this.shadowRoot.getElementById('miDialogo');
+        dialog.close();
     }
 
     static get observedAttributes() {

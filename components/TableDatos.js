@@ -179,7 +179,6 @@ width: 10px;
 
     </div >
     `
-
   }
 
   connectedCallback() {
@@ -198,10 +197,6 @@ width: 10px;
       let btnData = btn.dataset.accion;
       let fila = e.target.closest('tr');
 
-      // console.log(btn);
-      // console.log(fila);
-      // console.log(filaId)
-
       this.dispatchEvent(new CustomEvent('tabla-click', {
         bubbles: true,
         composed: true,
@@ -209,69 +204,36 @@ width: 10px;
           btnData: btnData,
           fila: fila,
         }
-
       }))
     });
 
     this.addEventListener('modal-cerrado', () => {
       this.setBtnText('Guardar');
       this.limpiarFormulario();
-    })
-
-
-
-    // this.addEventListener('open-modal', (e) => {
-    //   this._modalExterno = e.detail.value;
-    //   // this._btnCerrar = e.detail.boton;
-
-    //   // if (this._btnCerrar) {
-    //   //   this._btnCerrar.addEventListener('click', () => {
-    //   //     this._modalExterno.close();
-    //   //   })
-    //   // }
-    //   console.log(this._modalExterno)
-    //   console.log(this._btnCerrar)
-    // })
-
-
-
-
+    });
 
     this.shadowRoot.querySelector('#abrir').addEventListener('click', () => {
-      // if (this._modalExterno) {
-      //   this._modalExterno.showModal();
-      // } else {
-      //   console.log("Error")
-      // }
-
-      console.log('Click nuevo registro')
-      this.dispatchEvent(new CustomEvent('click-form-dialog', {
+      this.dispatchEvent(new CustomEvent('click-nuevo-registro', {
         bubbles: true,
         composed: true,
       }));
 
     })
-
-
   }
 
   getModal() {
     return this.shadowRoot.querySelector('form-dialog');
   }
 
-
   pintarDatos(array) {
-
     let table = this.shadowRoot.querySelector('table');
     let tbody = table.tBodies[0];
     tbody.innerHTML = "";
     for (let obj of array) {
       tbody.append(this.crearFila(obj, table))
     }
-
     console.log(table.dataset.lista)
   }
-
 
   cerrarModal() {
     this._modalExterno.close();
@@ -283,8 +245,6 @@ width: 10px;
   //   let tbody = table.tBodies[0];
   //   tbody.append(this.crearFila(obj));
   // }
-
-
 
   static get observedAttributes() {
     return ["class", "id", "colums", "btn-registro-label"];
@@ -305,15 +265,11 @@ width: 10px;
 
   limpiarFormulario() {
     let slotForm = this.shadowRoot.querySelector('slot[name="form"]').assignedElements();
-
     let form = slotForm.find(element => element.tagName == "FORM");
 
     if(form){
       form.reset();
     }
-
-    console.log(slotForm.find(element => element.tagName == "FORM"))
-    console.log(slotForm[0].tagName)
   }
 
 

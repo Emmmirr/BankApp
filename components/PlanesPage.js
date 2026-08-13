@@ -128,7 +128,6 @@ class PlanesPage extends HTMLElement {
     this._compCardsInfo = this.shadowRoot.querySelector('cards-info');
     this._arrayPlanes = comprobarDatosLocal(this._list);
 
-
     // compTable.pintarDatos(this._arrayClientes);
     // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
@@ -163,25 +162,17 @@ class PlanesPage extends HTMLElement {
         // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
         this.actualizarInterfaz(this._arrayPlanes);
-        this._compTable.cerrarModal();
+        this._compTable.getModal().close();
       }
-
-
     });
 
-    this.addEventListener('open-modal', (e) => {
+    this.addEventListener('click-nuevo-registro', () => {
+      this._compTable.getModal().show();
+    });
 
-      this._modal = e.detail.value;
-
-      if (this._modal) {
-        this._modal.addEventListener('close', () => {
-          form.reset();
-
-          if (this._filaEnEdicion) {
-            this._filaEnEdicion = null;
-            this._compTable.setBtnText('Guardar');
-          }
-        })
+    this.addEventListener('modal-cerrado', () => {
+      if(this._filaEnEdicion){
+        this._filaEnEdicion = null;
       }
     })
 
@@ -214,16 +205,12 @@ class PlanesPage extends HTMLElement {
             form.elements[key].value = value;
           }
         });
-
         this._compTable.setBtnText('Actualizar');
-        this._modal.showModal();
-
+        this._compTable.getModal().show();
       }
     })
 
   }
-
-
 
   actualizarInterfaz(arr) {
 
@@ -236,9 +223,7 @@ class PlanesPage extends HTMLElement {
     this._compTable.pintarDatos(arr);
     // this._compCardsInfo.setAttribute('total-cantidad', sumarCantidades(arr, "precio-anual"));
     // this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayPlanes.length);
-  
   }
-
 }
 
 customElements.define("planes-page", PlanesPage);

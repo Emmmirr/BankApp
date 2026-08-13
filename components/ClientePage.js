@@ -140,7 +140,7 @@ class ClientePage extends HTMLElement {
 
         this.actualizarInterfaz(this._arrayClientes);
 
-        this._compTable.cerrarModal();
+        this._compTable.getModal().close();
       }
 
 
@@ -149,22 +149,15 @@ class ClientePage extends HTMLElement {
     //Para facilitarnos el abrir el modal agregamos el listener
     //del evento que creamos en FormDialog.js
 
-    this.addEventListener('open-modal', (e) => {
+    this.addEventListener('click-nuevo-registro', () => {
+      this._compTable.getModal().show();
+    });
 
-      this._modal = e.detail.value;
-
-      if (this._modal) {
-        this._modal.addEventListener('close', () => {
-          form.reset();
-
-          if (this._filaEnEdicion) {
-            this._filaEnEdicion = null;
-            this._compTable.setBtnText('Guardar');
-          }
-        })
+    this.addEventListener('modal-cerrado', () => {
+      if(this._filaEnEdicion){
+        this._filaEnEdicion = null;
       }
-    })
-
+    });
 
     //Lo hacemos para que solamente tengamos un evento en toda
     //la tabla y se active al clickear los botoness
@@ -200,15 +193,9 @@ class ClientePage extends HTMLElement {
         });
 
         this._compTable.setBtnText('Actualizar');
-
-        this._modal.showModal();
+        this._compTable.getModal().show();
 
       }
-
-
-
-
-
     })
 
   }

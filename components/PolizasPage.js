@@ -242,7 +242,7 @@ class PolizasPage extends HTMLElement {
         // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
         this.actualizarInterfaz(this._arrayPolizas);
-        this._compTable.cerrarModal();
+        this._compTable.getModal().close();
       }
     });
 
@@ -263,7 +263,7 @@ class PolizasPage extends HTMLElement {
     //   }
     // });
 
-    this.addEventListener('click-form-dialog', () => {
+    this.addEventListener('click-nuevo-registro', () => {
       inputFechaEmision.valueAsDate = new Date();
       this._compTable.getModal().show();
     });
@@ -308,7 +308,6 @@ class PolizasPage extends HTMLElement {
 
         this._compTable.setBtnText('Actualizar');
         this._compTable.getModal().show();
-
       }
     })
 
@@ -317,10 +316,7 @@ class PolizasPage extends HTMLElement {
   }
 
   sumarCantidades(arr) {
-
-    console.log(arr)
     return arr.reduce((sum, current) => sum + +current['precio-anual'], 0);
-
   }
 
   actualizarInterfaz(arr) {

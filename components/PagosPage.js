@@ -155,6 +155,7 @@ class PagosPage extends HTMLElement {
     const inputPlan = this.shadowRoot.querySelector('#plan');
     const inputMontoPagado = this.shadowRoot.querySelector('#monto-pagado');
     const inputFechaVencimiento = this.shadowRoot.querySelector('#fecha-vencimiento');
+    const inputFechaPago = this.shadowRoot.querySelector('#fecha-pago');
     let form = this.shadowRoot.querySelector('form');
 
 
@@ -240,8 +241,6 @@ class PagosPage extends HTMLElement {
     this.addEventListener('click-guardar', () => {
       if (form.reportValidity()) {
         let formData = new FormData(form);
-
-
         let objForm = Object.fromEntries(formData.entries());
 
         console.log(objForm)
@@ -260,31 +259,20 @@ class PagosPage extends HTMLElement {
         // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
         this.actualizarInterfaz(this._arrayPagos);
-
-        this._compTable.cerrarModal();
+        this._compTable.getModal().close();
       }
-
-
     });
 
-    //Para facilitarnos el abrir el modal agregamos el listener
-    //del evento que creamos en FormDialog.js
+    this.addEventListener('click-nuevo-registro', () => {
+      inputFechaPago.valueAsDate = new Date();
+      this._compTable.getModal().show();
+    });
 
-    this.addEventListener('open-modal', (e) => {
-
-      this._modal = e.detail.value;
-
-      if (this._modal) {
-        this._modal.addEventListener('close', () => {
-          form.reset();
-
-          if (this._filaEnEdicion) {
-            this._filaEnEdicion = null;
-            this._compTable.setBtnText('Guardar');
-          }
-        })
+    this.addEventListener('modal-cerrado', () => {
+      if(this._filaEnEdicion){
+        this._filaEnEdicion = null;
       }
-    })
+    });  
 
 
     //Lo hacemos para que solamente tengamos un evento en toda
@@ -321,20 +309,12 @@ class PagosPage extends HTMLElement {
         });
 
         this._compTable.setBtnText('Actualizar');
-
-        this._modal.showModal();
+        this._compTable.getModal().show();
 
       }
-    })
-
-
-
-
+    });
     this.actualizarInterfaz(this._arrayPagos);
-
   }
-
-
 
   //Se hizo un solo metodo para todo aquello que se ejecutaba
   //al inicio o al final de alguna accion como al iniciar la pag.
@@ -354,8 +334,7 @@ class PagosPage extends HTMLElement {
 
 
       let cliente = this._clientesIndex[poliza?.cliente];
-      let plan = this._planesIndex[poliza?.plan].nombre;
-
+      let plan = this._planesIndex[poliza?.plan]?.nombre;
 
       console.log(poliza)
       console.log(cliente)
