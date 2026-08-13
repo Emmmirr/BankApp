@@ -213,18 +213,25 @@ width: 10px;
       }))
     });
 
-    this.addEventListener('open-modal', (e) => {
-      this._modalExterno = e.detail.value;
-      // this._btnCerrar = e.detail.boton;
-
-      // if (this._btnCerrar) {
-      //   this._btnCerrar.addEventListener('click', () => {
-      //     this._modalExterno.close();
-      //   })
-      // }
-      console.log(this._modalExterno)
-      console.log(this._btnCerrar)
+    this.addEventListener('modal-cerrado', () => {
+      this.setBtnText('Guardar');
+      this.limpiarFormulario();
     })
+
+
+
+    // this.addEventListener('open-modal', (e) => {
+    //   this._modalExterno = e.detail.value;
+    //   // this._btnCerrar = e.detail.boton;
+
+    //   // if (this._btnCerrar) {
+    //   //   this._btnCerrar.addEventListener('click', () => {
+    //   //     this._modalExterno.close();
+    //   //   })
+    //   // }
+    //   console.log(this._modalExterno)
+    //   console.log(this._btnCerrar)
+    // })
 
 
 
@@ -294,6 +301,19 @@ width: 10px;
 
     formDialog.setAttribute('btn-text', txt);
 
+  }
+
+  limpiarFormulario() {
+    let slotForm = this.shadowRoot.querySelector('slot[name="form"]').assignedElements();
+
+    let form = slotForm.find(element => element.tagName == "FORM");
+
+    if(form){
+      form.reset();
+    }
+
+    console.log(slotForm.find(element => element.tagName == "FORM"))
+    console.log(slotForm[0].tagName)
   }
 
 

@@ -246,22 +246,22 @@ class PolizasPage extends HTMLElement {
       }
     });
 
-    this.addEventListener('open-modal', (e) => {
+    // this.addEventListener('open-modal', (e) => {
 
-      this._modal = e.detail.value;
+    //   this._modal = e.detail.value;
 
-      if (this._modal) {
+    //   if (this._modal) {
 
-        this._modal.addEventListener('close', () => {
-          form.reset();
+    //     this._modal.addEventListener('close', () => {
+    //       // form.reset();
 
-          if (this._filaEnEdicion) {
-            this._filaEnEdicion = null;
-            this._compTable.setBtnText('Guardar');
-          }
-        });
-      }
-    });
+    //       if (this._filaEnEdicion) {
+    //         this._filaEnEdicion = null;
+    //         this._compTable.setBtnText('Guardar');
+    //       }
+    //     });
+    //   }
+    // });
 
     this.addEventListener('click-form-dialog', () => {
       inputFechaEmision.valueAsDate = new Date();
@@ -269,10 +269,10 @@ class PolizasPage extends HTMLElement {
     });
 
     this.addEventListener('modal-cerrado', () => {
-      form.reset();
+      // form.reset();
       if (this._filaEnEdicion) {
         this._filaEnEdicion = null;
-        this._compTable.setBtnText('Guardar');
+        // this._compTable.setBtnText('Guardar');
       }
     });
 
