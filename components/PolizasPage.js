@@ -89,7 +89,7 @@ class PolizasPage extends HTMLElement {
 
           </cards-info>
         <table-datos id="table-polizas" data-lista="listaPolizas" 
-        colums="Cliente,Plan,Fecha Inicio,Fecha Fin,Estado,Precio Contratado:Money,Fecha Emision,Acciones">
+        colums="Cliente,Plan,Fecha Inicio,Fecha Fin,Estado,Precio Contratado:Money,Fecha Emision,Acciones" btn-registro-label=" Nueva Póliza">
 
           <form slot="form" action="" id="formPolizas" data-table="table-polizas">
 

@@ -17,6 +17,7 @@ class TableDatos extends HTMLElement {
     const idTable = this.getAttribute('id');
     const dataTable = this.dataset.lista;
     const colums = this.getAttribute('colums');
+    const btnRegistroLabel = this.getAttribute('btn-registro-label') || "Nuevo Registro";
     const dataColumsMoney = this.getAttribute('colums-money');
     const dataColumn = this.dataset.nameCol;
     const dataType = this.dataset.type;
@@ -137,7 +138,7 @@ width: 10px;
 
     <div class="datosContainer">
       <div class="datosContainerHeader">
-        <button class="btn-agregar btn-general" id="abrir">Nuevo pago</button>
+        <button class="btn-agregar btn-general" id="abrir">${btnRegistroLabel}</button>
       </div>
 
       <table id="${idTable}" data-lista="${dataTable}">
@@ -279,7 +280,7 @@ width: 10px;
 
 
   static get observedAttributes() {
-    return ["class", "id", "colums"]
+    return ["class", "id", "colums", "btn-registro-label"];
   }
 
   attributeChangedCallback() {
