@@ -3,7 +3,7 @@ import TableDatos from "./TableDatos.js";
 import FormDialog from "./FormDialog.js";
 import CardsInfo from "./CardsInfo.js"
 
-import { comprobarDatosLocal, guardarDatosLocal, sumarCantidades } from "./utils.js";
+import { comprobarDatosLocal, guardarDatosLocal, sumarCantidades, transformarFormAObjeto } from "./utils.js";
 
 class PlanesPage extends HTMLElement {
 
@@ -138,13 +138,12 @@ class PlanesPage extends HTMLElement {
     this.addEventListener('click-guardar', () => {
 
       if (form.reportValidity()) {
-        let formData = new FormData(form);
 
-        let objForm = Object.fromEntries(formData.entries());
-
-        objForm['precio-anual'] = +objForm['precio-anual'];
+        let objForm = transformarFormAObjeto(form);
 
         console.log(objForm)
+
+        // objForm['precio-anual'] = +objForm['precio-anual'];
 
         if (this._filaEnEdicion) {
 

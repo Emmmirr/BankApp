@@ -2,7 +2,7 @@ import PageHeader from "./PageHeader.js";
 import TableDatos from "./TableDatos.js";
 import FormDialog from "./FormDialog.js";
 import CardsInfo from "./CardsInfo.js"
-import { comprobarDatosLocal, guardarDatosLocal, sumarCantidades } from "./utils.js";
+import { comprobarDatosLocal, guardarDatosLocal, sumarCantidades, transformarFormAObjeto } from "./utils.js";
 
 class PagosPage extends HTMLElement {
 
@@ -93,7 +93,7 @@ class PagosPage extends HTMLElement {
 
           </cards-info>
         <table-datos id="table-pagos" data-lista="listaPagos" 
-        colums="Poliza,Plan,Monto Pagado,Fecha Pago,Fecha Vencimiento,Metodo Pago,Acciones">
+        colums="Poliza,Plan,Monto Pagado:Money,Fecha Pago,Fecha Vencimiento,Metodo Pago,Acciones">
 
           <form slot="form" action="" id="formDatos" data-table="table-pagos">
 
@@ -101,7 +101,7 @@ class PagosPage extends HTMLElement {
             <div>
               <label for="poliza">Póliza:</label>
               
-              <select name="poliza" id="poliza">
+              <select name="poliza" id="poliza" data-type="number">
                 <option value="">Selecciona la póliza</option>
               </select>
             </div>
@@ -116,7 +116,7 @@ class PagosPage extends HTMLElement {
           <div class="form-section">
             <div>
               <h2>Monto Pagado</h2>
-              <input readonly type="text" name="monto-pagado" id="monto-pagado" required />
+              <input readonly type="number" name="monto-pagado" id="monto-pagado" required />
             </div>
 
             <div>
@@ -240,8 +240,8 @@ class PagosPage extends HTMLElement {
 
     this.addEventListener('click-guardar', () => {
       if (form.reportValidity()) {
-        let formData = new FormData(form);
-        let objForm = Object.fromEntries(formData.entries());
+
+        let objForm = transformarFormAObjeto(form);
 
         console.log(objForm)
 

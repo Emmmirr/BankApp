@@ -2,7 +2,7 @@ import PageHeader from "./PageHeader.js";
 import TableDatos from "./TableDatos.js";
 import FormDialog from "./FormDialog.js";
 import CardsInfo from "./CardsInfo.js"
-import { comprobarDatosLocal, guardarDatosLocal, sumarCantidades } from "./utils.js";
+import { comprobarDatosLocal, guardarDatosLocal, sumarCantidades, comprobarRelacion, transformarFormAObjeto } from "./utils.js";
 
 class ClientePage extends HTMLElement {
 
@@ -119,11 +119,8 @@ class ClientePage extends HTMLElement {
 
     this.addEventListener('click-guardar', () => {
       if (form.reportValidity()) {
-        let formData = new FormData(form);
 
-        let objForm = Object.fromEntries(formData.entries());
-
-        console.log(objForm)
+        let objForm = transformarFormAObjeto(form);
 
         if (this._filaEnEdicion) {
           let filaIndex = this._arrayClientes.findIndex(elem => elem.id == +this._filaEnEdicion)
@@ -154,7 +151,7 @@ class ClientePage extends HTMLElement {
     });
 
     this.addEventListener('modal-cerrado', () => {
-      if(this._filaEnEdicion){
+      if (this._filaEnEdicion) {
         this._filaEnEdicion = null;
       }
     });
@@ -164,25 +161,32 @@ class ClientePage extends HTMLElement {
 
     this.addEventListener('tabla-click', (e) => {
       let fila = e.detail.fila;
-      let filaId = fila.dataset.id;
+      let filaId = +fila.dataset.id;
+      console.log(typeof filaId)
       let btnAccion = e.detail.btnData;
 
       if (btnAccion == "eliminar") {
-        let filaIndex = this._arrayClientes.findIndex(elem => elem.id == +filaId);
 
-        this._arrayClientes.splice(filaIndex, 1);
-        guardarDatosLocal(this._list, this._arrayClientes);
-        console.log("Boton eliminar pulsado")
-        console.log(this._arrayClientes)
-        // compTable.pintarDatos(this._arrayClientes);
-        // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
-        this.actualizarInterfaz(this._arrayClientes);
+        if (comprobarRelacion(filaId, "listaPolizas", "cliente")) {
+          console.log("Existe una póliza con el ID a borrar, no se puede borrar el cliente")
+        } else {
+
+          let filaIndex = this._arrayClientes.findIndex(elem => elem.id == filaId);
+
+          this._arrayClientes.splice(filaIndex, 1);
+          guardarDatosLocal(this._list, this._arrayClientes);
+          console.log("Boton eliminar pulsado")
+          console.log(this._arrayClientes)
+          this.actualizarInterfaz(this._arrayClientes);
+        }
+
+
       }
 
       if (btnAccion == "editar") {
 
         this._filaEnEdicion = filaId;
-        let filaEditar = this._arrayClientes.find(elem => elem.id == +filaId);
+        let filaEditar = this._arrayClientes.find(elem => elem.id == filaId);
         Object.entries(filaEditar).forEach(([key, value]) => {
 
           if (key == "id") return;
@@ -208,7 +212,7 @@ class ClientePage extends HTMLElement {
 
   actualizarInterfaz(arr) {
     let objDatos = [
-      {titulo:"Registros", valor:arr.length, tipo:"number"}
+      { titulo: "Registros", valor: arr.length, tipo: "number" }
     ];
     this._compCardsInfo.pintarTarjetas = objDatos;
     this._compTable.pintarDatos(arr);

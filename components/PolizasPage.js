@@ -3,7 +3,7 @@ import TableDatos from "./TableDatos.js";
 import FormDialog from "./FormDialog.js";
 import CardsInfo from "./CardsInfo.js"
 
-import { comprobarDatosLocal, formatearValorMoneda, guardarDatosLocal } from "./utils.js";
+import { comprobarDatosLocal, formatearValorMoneda, guardarDatosLocal, transformarFormAObjeto} from "./utils.js";
 
 class PolizasPage extends HTMLElement {
 
@@ -98,7 +98,7 @@ class PolizasPage extends HTMLElement {
             <div>
               <label for="cliente">Cliente:</label>
               
-              <select name="cliente" id="cliente">
+              <select name="cliente" id="cliente" data-type="number">
                 <option value="">Selecciona el cliente</option>
               </select>
 
@@ -106,7 +106,7 @@ class PolizasPage extends HTMLElement {
 
             <div>
               <label for="plan">Plan</label>
-              <select name="plan" id="plan"/>
+              <select name="plan" id="plan" data-type="number"/>
                 <option value="">Selecciona el producto</option>
               </select>
             </div>
@@ -219,12 +219,10 @@ class PolizasPage extends HTMLElement {
 
     this.addEventListener('click-guardar', () => {
 
+
       if (form.reportValidity()) {
-        let formData = new FormData(form);
 
-        let objForm = Object.fromEntries(formData.entries());
-
-        console.log(objForm)
+        let objForm = transformarFormAObjeto(form);
 
         if (this._filaEnEdicion) {
 
