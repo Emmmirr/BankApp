@@ -93,12 +93,9 @@ col:nth-child(4) {
   width: 150px;
 }
 
-
 col:nth-child(5) {
   width: 150px;
 }
-
-
 
 table td:nth-child(4) {
   text-align: right;
@@ -134,8 +131,6 @@ table th:nth-child(5) {
 form {
   width: 525px;
 }
-
-
 
 .btn-general {
   display: inline-flex;
@@ -284,7 +279,6 @@ dialog {
   border-right: 1px solid #eee;
 }
 
-
 .form-section {
   display: flex;
   gap: 35px;
@@ -300,17 +294,15 @@ dialog {
     border: 1px solid hsl(0, 0%, 80%);
     padding: 10px;
 
-    &:user-invalid{
+    &:user-invalid {
       border-color: red;
     }
   }
 
   h2 {
     font-size: 15px;
-    font-weight: normal
+    font-weight: normal;
   }
-
-
 }
 
 .button-form-section {
@@ -321,6 +313,6 @@ dialog {
   gap: 20px;
 }
 
-.texto-rojo{
+.texto-rojo {
   color: red;
 }
