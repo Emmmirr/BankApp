@@ -8,6 +8,7 @@ import {
   guardarDatosLocal,
   sumarCantidades,
   transformarFormAObjeto,
+  notificarToast,
 } from "./utils.js";
 
 class PagosPage extends HTMLElement {
@@ -92,7 +93,7 @@ class PagosPage extends HTMLElement {
 
         </style>
 
-                <notification-toast></notification-toast>
+
           <page-header title="Pagos">
               Pago de todos los clientes
           </page-header>
@@ -268,7 +269,12 @@ class PagosPage extends HTMLElement {
 
         this.actualizarInterfaz(this._arrayPagos);
         this._compTable.getModal().close();
-        this._compNotificationToast.agregarToast("error");
+        notificarToast(
+          "exito",
+          "Pago registrado",
+          "Ha registrado correctamente",
+        );
+        // this._compNotificationToast.agregarToast("exito", "Pago registrado");
       }
     });
 
@@ -303,6 +309,7 @@ class PagosPage extends HTMLElement {
         // compTable.pintarDatos(this._arrayClientes);
         // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
         this.actualizarInterfaz(this._arrayPagos);
+        this._compNotificationToast.agregarToast("info", "Pago eliminado");
       }
 
       if (btnAccion == "editar") {

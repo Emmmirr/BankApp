@@ -161,14 +161,15 @@ class NotificationToast extends HTMLElement {
 
     this._contenedorToast = this.shadowRoot.getElementById("contenedor-toast");
     this._contenedorToast.addEventListener("click", (e) => {
-      const elemento = e.target.closest(".toast");
-      if (elemento) {
-        this.cerrarToast(elemento);
+      const elBtn = e.target.closest("button.btn-cerrar");
+      const elToast = e.target.closest("div.toast");
+
+      if (elBtn) {
+        this.cerrarToast(elToast);
       }
     });
 
     const handleAnimacionCerrar = (e) => {
-      console.log(e.target);
       if (e.animationName === "cierre") {
         e.target.remove();
       }
@@ -179,13 +180,14 @@ class NotificationToast extends HTMLElement {
       handleAnimacionCerrar,
     );
 
-    this.agregarToast("exito");
-    this.agregarToast("error");
-    this.agregarToast("info");
-    this.agregarToast("warning");
+    window.addEventListener("notificar-toast", this.handleNotificarToast);
   }
 
-  agregarToast(tipo) {
+  disconnectedCallback() {
+    window.removeEventListener("notificar-toast", this.handleNotificarToast);
+  }
+
+  agregarToast(tipo, titulo = null, descripcion = null) {
     const nuevoToast = document.createElement("div");
     const toastId = Date.now();
     nuevoToast.classList.add("toast");
@@ -283,7 +285,9 @@ class NotificationToast extends HTMLElement {
       },
     };
 
-    const tipoElegido = contenidoToast[tipo];
+    const tipoElegido = contenidoToast[tipo] || contenidoToast.info;
+    const tituloFinal = titulo ?? tipoElegido.titulo;
+    const descripcionFinal = descripcion ?? tipoElegido.descripcion;
 
     const estructuraToast = `
           <div class="contenido">
@@ -292,8 +296,8 @@ class NotificationToast extends HTMLElement {
             </div>
 
             <div class="texto">
-                <p class="titulo">${tipoElegido.titulo}</p>
-                <p class="descripcion">${tipoElegido.descripcion}<p/>
+                <p class="titulo">${tituloFinal}</p>
+                <p class="descripcion">${descripcionFinal}<p/>
             </div>
           </div>
 
@@ -325,6 +329,11 @@ class NotificationToast extends HTMLElement {
   cerrarToast(elemento) {
     elemento.classList.add("cerrando");
   }
+
+  handleNotificarToast = (e) => {
+    const { tipo, titulo, descripcion } = e.detail || {};
+    this.agregarToast(tipo, titulo, descripcion);
+  };
 }
 
 customElements.define("notification-toast", NotificationToast);

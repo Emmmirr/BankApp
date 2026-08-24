@@ -1,14 +1,20 @@
 import PageHeader from "./PageHeader.js";
 import TableDatos from "./TableDatos.js";
 import FormDialog from "./FormDialog.js";
-import CardsInfo from "./CardsInfo.js"
-import { comprobarDatosLocal, guardarDatosLocal, sumarCantidades, comprobarRelacion, transformarFormAObjeto } from "./utils.js";
+import CardsInfo from "./CardsInfo.js";
+import NotificationToast from "./NotificationToast.js";
+import {
+  comprobarDatosLocal,
+  guardarDatosLocal,
+  sumarCantidades,
+  comprobarRelacion,
+  transformarFormAObjeto,
+} from "./utils.js";
 
 class ClientePage extends HTMLElement {
-
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: "open" });
     this._arrayClientes = null;
     this._filaEnEdicion = null;
     this._list = null;
@@ -60,6 +66,8 @@ class ClientePage extends HTMLElement {
 
 
         </style>
+
+        <notification-toast></notification-toast>
           <page-header title="Clientes">
               Registro de los clientes
           </page-header>
@@ -98,15 +106,15 @@ class ClientePage extends HTMLElement {
           </div>
         </form>
         </table-datos>
-        `
+        `;
   }
 
   connectedCallback() {
     this.render();
 
-    this._list = this.shadowRoot.querySelector('table-datos').dataset.lista;
-    this._compTable = this.shadowRoot.querySelector('table-datos');
-    this._compCardsInfo = this.shadowRoot.querySelector('cards-info');
+    this._list = this.shadowRoot.querySelector("table-datos").dataset.lista;
+    this._compTable = this.shadowRoot.querySelector("table-datos");
+    this._compCardsInfo = this.shadowRoot.querySelector("cards-info");
     this._arrayClientes = comprobarDatosLocal(this._list);
 
     // compTable.pintarDatos(this._arrayClientes);
@@ -114,21 +122,21 @@ class ClientePage extends HTMLElement {
 
     this.actualizarInterfaz(this._arrayClientes);
 
-    let form = this.shadowRoot.querySelector('form');
+    let form = this.shadowRoot.querySelector("form");
 
-
-    this.addEventListener('click-guardar', () => {
+    this.addEventListener("click-guardar", () => {
       if (form.reportValidity()) {
-
         let objForm = transformarFormAObjeto(form);
 
         if (this._filaEnEdicion) {
-          let filaIndex = this._arrayClientes.findIndex(elem => elem.id == +this._filaEnEdicion)
+          let filaIndex = this._arrayClientes.findIndex(
+            (elem) => elem.id == +this._filaEnEdicion,
+          );
           objForm.id = this._filaEnEdicion;
           this._arrayClientes[filaIndex] = objForm;
         } else {
           objForm.id = Date.now();
-          this._arrayClientes.push(objForm)
+          this._arrayClientes.push(objForm);
         }
 
         guardarDatosLocal(this._list, this._arrayClientes);
@@ -139,18 +147,16 @@ class ClientePage extends HTMLElement {
 
         this._compTable.getModal().close();
       }
-
-
     });
 
     //Para facilitarnos el abrir el modal agregamos el listener
     //del evento que creamos en FormDialog.js
 
-    this.addEventListener('click-nuevo-registro', () => {
+    this.addEventListener("click-nuevo-registro", () => {
       this._compTable.getModal().show();
     });
 
-    this.addEventListener('modal-cerrado', () => {
+    this.addEventListener("modal-cerrado", () => {
       if (this._filaEnEdicion) {
         this._filaEnEdicion = null;
       }
@@ -159,36 +165,34 @@ class ClientePage extends HTMLElement {
     //Lo hacemos para que solamente tengamos un evento en toda
     //la tabla y se active al clickear los botoness
 
-    this.addEventListener('tabla-click', (e) => {
+    this.addEventListener("tabla-click", (e) => {
       let fila = e.detail.fila;
       let filaId = +fila.dataset.id;
-      console.log(typeof filaId)
+      console.log(typeof filaId);
       let btnAccion = e.detail.btnData;
 
       if (btnAccion == "eliminar") {
-
         if (comprobarRelacion(filaId, "listaPolizas", "cliente")) {
-          console.log("Existe una póliza con el ID a borrar, no se puede borrar el cliente")
+          console.log(
+            "Existe una póliza con el ID a borrar, no se puede borrar el cliente",
+          );
         } else {
-
-          let filaIndex = this._arrayClientes.findIndex(elem => elem.id == filaId);
+          let filaIndex = this._arrayClientes.findIndex(
+            (elem) => elem.id == filaId,
+          );
 
           this._arrayClientes.splice(filaIndex, 1);
           guardarDatosLocal(this._list, this._arrayClientes);
-          console.log("Boton eliminar pulsado")
-          console.log(this._arrayClientes)
+          console.log("Boton eliminar pulsado");
+          console.log(this._arrayClientes);
           this.actualizarInterfaz(this._arrayClientes);
         }
-
-
       }
 
       if (btnAccion == "editar") {
-
         this._filaEnEdicion = filaId;
-        let filaEditar = this._arrayClientes.find(elem => elem.id == filaId);
+        let filaEditar = this._arrayClientes.find((elem) => elem.id == filaId);
         Object.entries(filaEditar).forEach(([key, value]) => {
-
           if (key == "id") return;
 
           if (form.elements[key]) {
@@ -196,36 +200,26 @@ class ClientePage extends HTMLElement {
           }
         });
 
-        this._compTable.setBtnText('Actualizar');
+        this._compTable.setBtnText("Actualizar");
         this._compTable.getModal().show();
-
       }
-    })
-
+    });
   }
-
-
 
   //Se hizo un solo metodo para todo aquello que se ejecutaba
   //al inicio o al final de alguna accion como al iniciar la pag.
   //despues de eliminar registro o editar uno.
 
   actualizarInterfaz(arr) {
-    let objDatos = [
-      { titulo: "Registros", valor: arr.length, tipo: "number" }
-    ];
+    let objDatos = [{ titulo: "Registros", valor: arr.length, tipo: "number" }];
     this._compCardsInfo.pintarTarjetas = objDatos;
     this._compTable.pintarDatos(arr);
-
 
     // this._compCardsInfo.setAttribute('total-cantidad', sumarCantidades(arr, "amount"));
     // this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayClientes.length);
   }
-
-
 }
 
 customElements.define("cliente-page", ClientePage);
 
 export default ClientePage;
-
