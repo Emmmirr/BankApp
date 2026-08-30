@@ -3,6 +3,10 @@ class NotificationToast extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
     this._contenedorToast = null;
+    this._ultimoTiempoCreacion = 0;
+    this._ultimaDescripcion = null;
+    this._ultimoTipo = null;
+    this._ultimoTitulo = null;
   }
 
   render() {
@@ -30,6 +34,7 @@ class NotificationToast extends HTMLElement {
       max-width: 400px;
       position: fixed;
       right: 40px;
+      top: 20px;
     }
 
     .toast{
@@ -188,8 +193,26 @@ class NotificationToast extends HTMLElement {
   }
 
   agregarToast(tipo, titulo = null, descripcion = null) {
+    let tiempoCreacion = Date.now();
+    let tiempoCreacionAnterior = this._ultimoTiempoCreacion;
+    let diferenciaTiempo = tiempoCreacion - tiempoCreacionAnterior;
+    let descripcionAnterior = this._ultimaDescripcion;
+    let tituloAnterior = this._ultimoTitulo;
+
+    if (
+      diferenciaTiempo < 800 &&
+      descripcion === descripcionAnterior &&
+      titulo === tituloAnterior
+    ) {
+      return;
+    }
+
+    this._ultimoTiempoCreacion = tiempoCreacion;
+    this._ultimaDescripcion = descripcion;
+    this._ultimoTitulo = titulo;
+
     const nuevoToast = document.createElement("div");
-    const toastId = Date.now();
+
     nuevoToast.classList.add("toast");
     nuevoToast.classList.add(tipo);
     nuevoToast.classList.add("autoCierre");
@@ -321,6 +344,11 @@ class NotificationToast extends HTMLElement {
 
     this._contenedorToast.appendChild(nuevoToast);
 
+    console.log(this._ultimoTiempoCreacion);
+    console.log(this._ultimaDescripcion);
+    console.log(descripcionAnterior);
+    console.log(tiempoCreacion);
+    console.log(tiempoCreacionAnterior);
     setTimeout(() => {
       nuevoToast.classList.add("cerrando");
     }, 5000);

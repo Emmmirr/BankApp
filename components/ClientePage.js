@@ -9,6 +9,7 @@ import {
   sumarCantidades,
   comprobarRelacion,
   transformarFormAObjeto,
+  notificarToast,
 } from "./utils.js";
 
 class ClientePage extends HTMLElement {
@@ -67,7 +68,6 @@ class ClientePage extends HTMLElement {
 
         </style>
 
-        <notification-toast></notification-toast>
           <page-header title="Clientes">
               Registro de los clientes
           </page-header>
@@ -144,8 +144,12 @@ class ClientePage extends HTMLElement {
         // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
         this.actualizarInterfaz(this._arrayClientes);
-
         this._compTable.getModal().close();
+        notificarToast(
+          "exito",
+          "Cliente registrado",
+          "Se ha registrado correctamente el cliente",
+        );
       }
     });
 
@@ -168,25 +172,31 @@ class ClientePage extends HTMLElement {
     this.addEventListener("tabla-click", (e) => {
       let fila = e.detail.fila;
       let filaId = +fila.dataset.id;
-      console.log(typeof filaId);
       let btnAccion = e.detail.btnData;
 
       if (btnAccion == "eliminar") {
         if (comprobarRelacion(filaId, "listaPolizas", "cliente")) {
-          console.log(
-            "Existe una póliza con el ID a borrar, no se puede borrar el cliente",
-          );
-        } else {
-          let filaIndex = this._arrayClientes.findIndex(
-            (elem) => elem.id == filaId,
+          notificarToast(
+            "info",
+            "Cliente no eliminado",
+            "El cliente no puede ser eliminado, tiene póliza activa",
           );
 
-          this._arrayClientes.splice(filaIndex, 1);
-          guardarDatosLocal(this._list, this._arrayClientes);
-          console.log("Boton eliminar pulsado");
-          console.log(this._arrayClientes);
-          this.actualizarInterfaz(this._arrayClientes);
+          return;
         }
+
+        let filaIndex = this._arrayClientes.findIndex(
+          (elem) => elem.id == filaId,
+        );
+
+        this._arrayClientes.splice(filaIndex, 1);
+        guardarDatosLocal(this._list, this._arrayClientes);
+        this.actualizarInterfaz(this._arrayClientes);
+        notificarToast(
+          "exito",
+          "Cliente eliminado",
+          "Se ha eliminado correctamente el cliente",
+        );
       }
 
       if (btnAccion == "editar") {

@@ -1,15 +1,20 @@
 import PageHeader from "./PageHeader.js";
 import TableDatos from "./TableDatos.js";
 import FormDialog from "./FormDialog.js";
-import CardsInfo from "./CardsInfo.js"
+import CardsInfo from "./CardsInfo.js";
 
-import { comprobarDatosLocal, guardarDatosLocal, sumarCantidades, transformarFormAObjeto } from "./utils.js";
+import {
+  comprobarDatosLocal,
+  guardarDatosLocal,
+  sumarCantidades,
+  transformarFormAObjeto,
+  notificarToast,
+} from "./utils.js";
 
 class PlanesPage extends HTMLElement {
-
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: "open" });
     this._arrayPlanes = null;
     this._filaEnEdicion = null;
     this._list = null;
@@ -117,15 +122,15 @@ class PlanesPage extends HTMLElement {
 
         </form>
         </table-datos>
-        `
+        `;
   }
 
   connectedCallback() {
     this.render();
 
-    this._list = this.shadowRoot.querySelector('table-datos').dataset.lista;
-    this._compTable = this.shadowRoot.querySelector('table-datos');
-    this._compCardsInfo = this.shadowRoot.querySelector('cards-info');
+    this._list = this.shadowRoot.querySelector("table-datos").dataset.lista;
+    this._compTable = this.shadowRoot.querySelector("table-datos");
+    this._compCardsInfo = this.shadowRoot.querySelector("cards-info");
     this._arrayPlanes = comprobarDatosLocal(this._list);
 
     // compTable.pintarDatos(this._arrayClientes);
@@ -133,27 +138,25 @@ class PlanesPage extends HTMLElement {
 
     this.actualizarInterfaz(this._arrayPlanes);
 
-    let form = this.shadowRoot.querySelector('form');
+    let form = this.shadowRoot.querySelector("form");
 
-    this.addEventListener('click-guardar', () => {
-
+    this.addEventListener("click-guardar", () => {
       if (form.reportValidity()) {
-
         let objForm = transformarFormAObjeto(form);
 
-        console.log(objForm)
+        console.log(objForm);
 
         // objForm['precio-anual'] = +objForm['precio-anual'];
 
         if (this._filaEnEdicion) {
-
-          let filaIndex = this._arrayPlanes.findIndex(elem => elem.id == +this._filaEnEdicion)
+          let filaIndex = this._arrayPlanes.findIndex(
+            (elem) => elem.id == +this._filaEnEdicion,
+          );
           objForm.id = this._filaEnEdicion;
           this._arrayPlanes[filaIndex] = objForm;
-
         } else {
           objForm.id = Date.now();
-          this._arrayPlanes.push(objForm)
+          this._arrayPlanes.push(objForm);
         }
 
         guardarDatosLocal(this._list, this._arrayPlanes);
@@ -162,60 +165,72 @@ class PlanesPage extends HTMLElement {
 
         this.actualizarInterfaz(this._arrayPlanes);
         this._compTable.getModal().close();
+        notificarToast(
+          "exito",
+          "Plan registrado",
+          "Se ha registrado correctamente el plan",
+        );
       }
     });
 
-    this.addEventListener('click-nuevo-registro', () => {
+    this.addEventListener("click-nuevo-registro", () => {
       this._compTable.getModal().show();
     });
 
-    this.addEventListener('modal-cerrado', () => {
-      if(this._filaEnEdicion){
+    this.addEventListener("modal-cerrado", () => {
+      if (this._filaEnEdicion) {
         this._filaEnEdicion = null;
       }
-    })
+    });
 
-    this.addEventListener('tabla-click', (e) => {
+    this.addEventListener("tabla-click", (e) => {
       let fila = e.detail.fila;
       let filaId = fila.dataset.id;
       let btnAccion = e.detail.btnData;
 
       if (btnAccion == "eliminar") {
-        let filaIndex = this._arrayPlanes.findIndex(elem => elem.id == +filaId);
+        let filaIndex = this._arrayPlanes.findIndex(
+          (elem) => elem.id == +filaId,
+        );
 
         this._arrayPlanes.splice(filaIndex, 1);
         guardarDatosLocal(this._list, this._arrayPlanes);
-        console.log("Boton eliminar pulsado")
-        console.log(this._arrayPlanes)
+        console.log("Boton eliminar pulsado");
+        console.log(this._arrayPlanes);
         // compTable.pintarDatos(this._arrayClientes);
         // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
         this.actualizarInterfaz(this._arrayPlanes);
+        notificarToast(
+          "exito",
+          "Plan eliminado",
+          "Se ha eliminado correctamente el plan",
+        );
       }
 
       if (btnAccion == "editar") {
-
         this._filaEnEdicion = filaId;
-        let filaEditar = this._arrayPlanes.find(elem => elem.id == +filaId);
+        let filaEditar = this._arrayPlanes.find((elem) => elem.id == +filaId);
         Object.entries(filaEditar).forEach(([key, value]) => {
-
           if (key == "id") return;
 
           if (form.elements[key]) {
             form.elements[key].value = value;
           }
         });
-        this._compTable.setBtnText('Actualizar');
+        this._compTable.setBtnText("Actualizar");
         this._compTable.getModal().show();
       }
-    })
-
+    });
   }
 
   actualizarInterfaz(arr) {
-
     let objDatos = [
-      {titulo:"Total cantidad", valor:sumarCantidades(arr,"precio-anual"), tipo:"money"},
-      {titulo:"Registros", valor:arr.length, tipo:"number"}
+      {
+        titulo: "Total cantidad",
+        valor: sumarCantidades(arr, "precio-anual"),
+        tipo: "money",
+      },
+      { titulo: "Registros", valor: arr.length, tipo: "number" },
     ];
 
     this._compCardsInfo.pintarTarjetas = objDatos;
@@ -228,4 +243,3 @@ class PlanesPage extends HTMLElement {
 customElements.define("planes-page", PlanesPage);
 
 export default PlanesPage;
-

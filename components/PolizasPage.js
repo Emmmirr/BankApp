@@ -1,15 +1,20 @@
 import PageHeader from "./PageHeader.js";
 import TableDatos from "./TableDatos.js";
 import FormDialog from "./FormDialog.js";
-import CardsInfo from "./CardsInfo.js"
+import CardsInfo from "./CardsInfo.js";
 
-import { comprobarDatosLocal, formatearValorMoneda, guardarDatosLocal, transformarFormAObjeto} from "./utils.js";
+import {
+  comprobarDatosLocal,
+  formatearValorMoneda,
+  guardarDatosLocal,
+  transformarFormAObjeto,
+  notificarToast,
+} from "./utils.js";
 
 class PolizasPage extends HTMLElement {
-
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: "open" });
     this._arrayPolizas = null;
     this._filaEnEdicion = null;
     this._list = null;
@@ -150,57 +155,58 @@ class PolizasPage extends HTMLElement {
 
         </form>
         </table-datos>
-        `
+        `;
   }
 
   connectedCallback() {
     this.render();
 
-    this._list = this.shadowRoot.querySelector('table-datos').dataset.lista;
-    this._compTable = this.shadowRoot.querySelector('table-datos');
-    this._compCardsInfo = this.shadowRoot.querySelector('cards-info');
+    this._list = this.shadowRoot.querySelector("table-datos").dataset.lista;
+    this._compTable = this.shadowRoot.querySelector("table-datos");
+    this._compCardsInfo = this.shadowRoot.querySelector("cards-info");
     this._arrayPolizas = comprobarDatosLocal(this._list);
     this._arrayClientes = comprobarDatosLocal("listaClientes");
-    this._arrayPlanes = comprobarDatosLocal("listaPlanes")
+    this._arrayPlanes = comprobarDatosLocal("listaPlanes");
 
-    let form = this.shadowRoot.querySelector('form');
-    let select = this.shadowRoot.querySelector('select');
-    const selectPlan = this.shadowRoot.querySelector('#plan');
-    const inputPrecio = this.shadowRoot.querySelector('#precio-contratado');
+    let form = this.shadowRoot.querySelector("form");
+    let select = this.shadowRoot.querySelector("select");
+    const selectPlan = this.shadowRoot.querySelector("#plan");
+    const inputPrecio = this.shadowRoot.querySelector("#precio-contratado");
     const inputFechaEmision = this.shadowRoot.querySelector("#fecha-emision");
-
 
     // compTable.pintarDatos(this._arrayClientes);
     // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
-    console.log(this._arrayPolizas.map(elemento => {
-      let date = new Date(elemento['fecha-inicio'])
+    console.log(
+      this._arrayPolizas.map((elemento) => {
+        let date = new Date(elemento["fecha-inicio"]);
 
-      return date;
-    }))
+        return date;
+      }),
+    );
 
-    this.llenarSelect("cliente", this._arrayClientes, "id",
-      (elem) => `${elem.nombre} ${elem['apellido-paterno'] ?? ""} ${elem['apellido-materno'] ?? ""}`);
+    this.llenarSelect(
+      "cliente",
+      this._arrayClientes,
+      "id",
+      (elem) =>
+        `${elem.nombre} ${elem["apellido-paterno"] ?? ""} ${elem["apellido-materno"] ?? ""}`,
+    );
     this.llenarSelect("plan", this._arrayPlanes, "id", "nombre");
 
-
     selectPlan.addEventListener("change", (e) => {
+      let plan = this._arrayPlanes.find((plan) => plan.id == e.target.value);
 
-      let plan = this._arrayPlanes.find(plan => plan.id == e.target.value);
-
-      inputPrecio.value = plan ? plan['precio-anual'] : "";
+      inputPrecio.value = plan ? plan["precio-anual"] : "";
 
       // if (plan) {
       //   inputPrecio.value = plan['precio-anual'];
       // } else {
       //   inputPrecio.value = "";
       // }
-
     });
 
     // nombreCliente?.nombre ?? `No existe el usuario: ${elemento.cliente}`
-
-
 
     // if (this._arrayPagos) {
 
@@ -215,24 +221,21 @@ class PolizasPage extends HTMLElement {
 
     // }
 
-    console.log(select)
+    console.log(select);
 
-    this.addEventListener('click-guardar', () => {
-
-
+    this.addEventListener("click-guardar", () => {
       if (form.reportValidity()) {
-
         let objForm = transformarFormAObjeto(form);
 
         if (this._filaEnEdicion) {
-
-          let filaIndex = this._arrayPolizas.findIndex(elem => elem.id == +this._filaEnEdicion)
+          let filaIndex = this._arrayPolizas.findIndex(
+            (elem) => elem.id == +this._filaEnEdicion,
+          );
           objForm.id = this._filaEnEdicion;
           this._arrayPolizas[filaIndex] = objForm;
-
         } else {
           objForm.id = Date.now();
-          this._arrayPolizas.push(objForm)
+          this._arrayPolizas.push(objForm);
         }
 
         guardarDatosLocal(this._list, this._arrayPolizas);
@@ -241,6 +244,11 @@ class PolizasPage extends HTMLElement {
 
         this.actualizarInterfaz(this._arrayPolizas);
         this._compTable.getModal().close();
+        notificarToast(
+          "exito",
+          "Póliza registrada",
+          "Se ha registrado correctamente la póliza",
+        );
       }
     });
 
@@ -261,12 +269,12 @@ class PolizasPage extends HTMLElement {
     //   }
     // });
 
-    this.addEventListener('click-nuevo-registro', () => {
+    this.addEventListener("click-nuevo-registro", () => {
       inputFechaEmision.valueAsDate = new Date();
       this._compTable.getModal().show();
     });
 
-    this.addEventListener('modal-cerrado', () => {
+    this.addEventListener("modal-cerrado", () => {
       // form.reset();
       if (this._filaEnEdicion) {
         this._filaEnEdicion = null;
@@ -274,29 +282,34 @@ class PolizasPage extends HTMLElement {
       }
     });
 
-    this.addEventListener('tabla-click', (e) => {
+    this.addEventListener("tabla-click", (e) => {
       let fila = e.detail.fila;
       let filaId = fila.dataset.id;
       let btnAccion = e.detail.btnData;
 
       if (btnAccion == "eliminar") {
-        let filaIndex = this._arrayPolizas.findIndex(elem => elem.id == +filaId);
+        let filaIndex = this._arrayPolizas.findIndex(
+          (elem) => elem.id == +filaId,
+        );
 
         this._arrayPolizas.splice(filaIndex, 1);
         guardarDatosLocal(this._list, this._arrayPolizas);
-        console.log("Boton eliminar pulsado")
-        console.log(this._arrayPolizas)
+        console.log("Boton eliminar pulsado");
+        console.log(this._arrayPolizas);
         // compTable.pintarDatos(this._arrayClientes);
         // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
         this.actualizarInterfaz(this._arrayPolizas);
+        notificarToast(
+          "exito",
+          "Póliza eliminada",
+          "Se ha eliminado correctamente la póliza",
+        );
       }
 
       if (btnAccion == "editar") {
-
         this._filaEnEdicion = filaId;
-        let filaEditar = this._arrayPolizas.find(elem => elem.id == +filaId);
+        let filaEditar = this._arrayPolizas.find((elem) => elem.id == +filaId);
         Object.entries(filaEditar).forEach(([key, value]) => {
-
           if (key == "id") return;
 
           if (form.elements[key]) {
@@ -304,23 +317,21 @@ class PolizasPage extends HTMLElement {
           }
         });
 
-        this._compTable.setBtnText('Actualizar');
+        this._compTable.setBtnText("Actualizar");
         this._compTable.getModal().show();
       }
-    })
+    });
 
     this.actualizarInterfaz(this._arrayPolizas);
-
   }
 
   sumarCantidades(arr) {
-    return arr.reduce((sum, current) => sum + +current['precio-anual'], 0);
+    return arr.reduce((sum, current) => sum + +current["precio-anual"], 0);
   }
 
   actualizarInterfaz(arr) {
-
-    let objPolizasTraducidas = arr.map(elemento => {
-      console.log(elemento.cliente)
+    let objPolizasTraducidas = arr.map((elemento) => {
+      console.log(elemento.cliente);
 
       // this._arrayPagos.map(elem => {
 
@@ -331,23 +342,35 @@ class PolizasPage extends HTMLElement {
 
       // })
 
-      let nombreCliente = this._arrayClientes.find(elem => elem.id == elemento.cliente);
-      let nombrePlan = this._arrayPlanes.find(elem => elem.id == elemento.plan);
+      let nombreCliente = this._arrayClientes.find(
+        (elem) => elem.id == elemento.cliente,
+      );
+      let nombrePlan = this._arrayPlanes.find(
+        (elem) => elem.id == elemento.plan,
+      );
 
-      console.log(nombreCliente)
-      return { ...elemento, cliente: nombreCliente ? nombreCliente.nombre + " " + nombreCliente['apellido-paterno'] + " " + nombreCliente['apellido-materno'] : `No existe el usuario: ${elemento.cliente}`, plan: nombrePlan ? nombrePlan.nombre : `NO existe el plan: ${elemento.plan}` }
+      console.log(nombreCliente);
+      return {
+        ...elemento,
+        cliente: nombreCliente
+          ? nombreCliente.nombre +
+            " " +
+            nombreCliente["apellido-paterno"] +
+            " " +
+            nombreCliente["apellido-materno"]
+          : `No existe el usuario: ${elemento.cliente}`,
+        plan: nombrePlan
+          ? nombrePlan.nombre
+          : `NO existe el plan: ${elemento.plan}`,
+      };
       // return {...elemento, cliente:  nombreCliente?.nombre ?? `No existe el usuario: ${elemento.cliente}` , plan : nombrePlan?.nombre ?? "No existe el plan"}
-
-
     });
 
     console.log(objPolizasTraducidas);
 
-    console.log(this._arrayClientes)
+    console.log(this._arrayClientes);
 
-    let objDatos = [
-      { titulo: "Registros", valor: arr.length, tipo: "number" }
-    ]
+    let objDatos = [{ titulo: "Registros", valor: arr.length, tipo: "number" }];
 
     this._compCardsInfo.pintarTarjetas = objDatos;
     this._compTable.pintarDatos(objPolizasTraducidas);
@@ -359,32 +382,27 @@ class PolizasPage extends HTMLElement {
   llenarSelect(idElement, array, campoValor, campoTexto) {
     if (array) {
       const select = this.shadowRoot.getElementById(idElement);
-      array.forEach(element => {
-        const option = document.createElement('option');
+      array.forEach((element) => {
+        const option = document.createElement("option");
         option.value = element[campoValor];
 
-        console.log(campoTexto)
-        console.log(typeof campoTexto)
+        console.log(campoTexto);
+        console.log(typeof campoTexto);
 
         if (typeof campoTexto == "string") {
           option.textContent = element[campoTexto];
-        } else if (typeof campoTexto == 'function') {
+        } else if (typeof campoTexto == "function") {
           option.textContent = campoTexto(element);
         } else {
           option.textContent = "Tipo de dato inválido";
         }
 
         select.append(option);
-      })
-
+      });
     }
-
-
   }
-
 }
 
 customElements.define("polizas-page", PolizasPage);
 
 export default PolizasPage;
-

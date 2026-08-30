@@ -250,8 +250,6 @@ class PagosPage extends HTMLElement {
       if (form.reportValidity()) {
         let objForm = transformarFormAObjeto(form);
 
-        console.log(objForm);
-
         if (this._filaEnEdicion) {
           let filaIndex = this._arrayPagos.findIndex(
             (elem) => elem.id == +this._filaEnEdicion,
@@ -272,9 +270,8 @@ class PagosPage extends HTMLElement {
         notificarToast(
           "exito",
           "Pago registrado",
-          "Ha registrado correctamente",
+          "Se ha registrado correctamente el pago",
         );
-        // this._compNotificationToast.agregarToast("exito", "Pago registrado");
       }
     });
 
@@ -309,7 +306,11 @@ class PagosPage extends HTMLElement {
         // compTable.pintarDatos(this._arrayClientes);
         // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
         this.actualizarInterfaz(this._arrayPagos);
-        this._compNotificationToast.agregarToast("info", "Pago eliminado");
+        notificarToast(
+          "exito",
+          "Pago eliminado",
+          "Se ha eliminado correctamente el pago",
+        );
       }
 
       if (btnAccion == "editar") {
