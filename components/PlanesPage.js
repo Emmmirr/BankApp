@@ -9,6 +9,7 @@ import {
   sumarCantidades,
   transformarFormAObjeto,
   notificarToast,
+  comprobarRelacion,
 } from "./utils.js";
 
 class PlanesPage extends HTMLElement {
@@ -143,6 +144,8 @@ class PlanesPage extends HTMLElement {
     this.addEventListener("click-guardar", () => {
       if (form.reportValidity()) {
         let objForm = transformarFormAObjeto(form);
+        let tituloToast;
+        let descToast;
 
         console.log(objForm);
 
@@ -154,9 +157,13 @@ class PlanesPage extends HTMLElement {
           );
           objForm.id = this._filaEnEdicion;
           this._arrayPlanes[filaIndex] = objForm;
+          tituloToast = "Plan actualizado";
+          descToast = "Se ha actualizado correctamente el plan";
         } else {
           objForm.id = Date.now();
           this._arrayPlanes.push(objForm);
+          tituloToast = "Plan registrado";
+          descToast = "Se ha registrado correctamente el plan";
         }
 
         guardarDatosLocal(this._list, this._arrayPlanes);
@@ -165,11 +172,7 @@ class PlanesPage extends HTMLElement {
 
         this.actualizarInterfaz(this._arrayPlanes);
         this._compTable.getModal().close();
-        notificarToast(
-          "exito",
-          "Plan registrado",
-          "Se ha registrado correctamente el plan",
-        );
+        notificarToast("exito", tituloToast, descToast);
       }
     });
 
@@ -185,20 +188,26 @@ class PlanesPage extends HTMLElement {
 
     this.addEventListener("tabla-click", (e) => {
       let fila = e.detail.fila;
-      let filaId = fila.dataset.id;
+      let filaId = +fila.dataset.id;
       let btnAccion = e.detail.btnData;
 
       if (btnAccion == "eliminar") {
+        if (comprobarRelacion(filaId, "listaPolizas", "plan")) {
+          notificarToast(
+            "info",
+            "Plan no eliminado",
+            "El plan no puede ser eliminado, tiene una póliza vinculada",
+          );
+
+          return;
+        }
+
         let filaIndex = this._arrayPlanes.findIndex(
-          (elem) => elem.id == +filaId,
+          (elem) => elem.id == filaId,
         );
 
         this._arrayPlanes.splice(filaIndex, 1);
         guardarDatosLocal(this._list, this._arrayPlanes);
-        console.log("Boton eliminar pulsado");
-        console.log(this._arrayPlanes);
-        // compTable.pintarDatos(this._arrayClientes);
-        // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
         this.actualizarInterfaz(this._arrayPlanes);
         notificarToast(
           "exito",

@@ -127,6 +127,8 @@ class ClientePage extends HTMLElement {
     this.addEventListener("click-guardar", () => {
       if (form.reportValidity()) {
         let objForm = transformarFormAObjeto(form);
+        let tituloToast;
+        let descToast;
 
         if (this._filaEnEdicion) {
           let filaIndex = this._arrayClientes.findIndex(
@@ -134,9 +136,13 @@ class ClientePage extends HTMLElement {
           );
           objForm.id = this._filaEnEdicion;
           this._arrayClientes[filaIndex] = objForm;
+          tituloToast = "Cliente actualizado";
+          descToast = "Se ha actualizado correctamente el cliente";
         } else {
           objForm.id = Date.now();
           this._arrayClientes.push(objForm);
+          tituloToast = "Cliente registrado";
+          descToast = "Se ha registrado correctamente el cliente";
         }
 
         guardarDatosLocal(this._list, this._arrayClientes);
@@ -145,11 +151,7 @@ class ClientePage extends HTMLElement {
 
         this.actualizarInterfaz(this._arrayClientes);
         this._compTable.getModal().close();
-        notificarToast(
-          "exito",
-          "Cliente registrado",
-          "Se ha registrado correctamente el cliente",
-        );
+        notificarToast("exito", tituloToast, descToast);
       }
     });
 
@@ -181,7 +183,6 @@ class ClientePage extends HTMLElement {
             "Cliente no eliminado",
             "El cliente no puede ser eliminado, tiene póliza activa",
           );
-
           return;
         }
 

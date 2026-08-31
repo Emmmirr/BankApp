@@ -15,7 +15,6 @@ export function guardarDatosLocal(name, array) {
 // guardarDatosLocal(list, objForm);
 export function comprobarDatosLocal(lista) {
   if (localStorage[lista]) {
-    console.log("Existe el dataset componente");
     let datosConvertidos = JSON.parse(localStorage[lista]);
     return datosConvertidos;
   } else {
@@ -25,12 +24,11 @@ export function comprobarDatosLocal(lista) {
 }
 
 export function sumarCantidades(arr, nombreCampo) {
-  return arr.reduce((sum, current) => sum + +current[nombreCampo], 0);
+  return arr.reduce((sum, current) => sum + (+current[nombreCampo] || 0), 0);
 }
 
 export function comprobarRelacion(idBuscado, listaBusqueda, campoRelacionado) {
   let lista = comprobarDatosLocal(listaBusqueda);
-  console.log(lista);
 
   return lista.some((el) => el[campoRelacionado] === idBuscado);
 }

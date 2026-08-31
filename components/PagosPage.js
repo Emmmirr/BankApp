@@ -249,6 +249,8 @@ class PagosPage extends HTMLElement {
     this.addEventListener("click-guardar", () => {
       if (form.reportValidity()) {
         let objForm = transformarFormAObjeto(form);
+        let tituloToast;
+        let descToast;
 
         if (this._filaEnEdicion) {
           let filaIndex = this._arrayPagos.findIndex(
@@ -256,9 +258,13 @@ class PagosPage extends HTMLElement {
           );
           objForm.id = this._filaEnEdicion;
           this._arrayPagos[filaIndex] = objForm;
+          tituloToast = "Pago actualizado";
+          descToast = "Se ha actualizado correctamente el pago";
         } else {
           objForm.id = Date.now();
           this._arrayPagos.push(objForm);
+          tituloToast = "Pago registrado";
+          descToast = "Se ha registrado correctamente el pago";
         }
 
         guardarDatosLocal(this._list, this._arrayPagos);
@@ -267,11 +273,7 @@ class PagosPage extends HTMLElement {
 
         this.actualizarInterfaz(this._arrayPagos);
         this._compTable.getModal().close();
-        notificarToast(
-          "exito",
-          "Pago registrado",
-          "Se ha registrado correctamente el pago",
-        );
+        notificarToast("exito", tituloToast, descToast);
       }
     });
 

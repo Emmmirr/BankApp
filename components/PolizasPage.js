@@ -9,6 +9,8 @@ import {
   guardarDatosLocal,
   transformarFormAObjeto,
   notificarToast,
+  sumarCantidades,
+  comprobarRelacion,
 } from "./utils.js";
 
 class PolizasPage extends HTMLElement {
@@ -226,6 +228,8 @@ class PolizasPage extends HTMLElement {
     this.addEventListener("click-guardar", () => {
       if (form.reportValidity()) {
         let objForm = transformarFormAObjeto(form);
+        let tituloToast;
+        let descToast;
 
         if (this._filaEnEdicion) {
           let filaIndex = this._arrayPolizas.findIndex(
@@ -233,9 +237,13 @@ class PolizasPage extends HTMLElement {
           );
           objForm.id = this._filaEnEdicion;
           this._arrayPolizas[filaIndex] = objForm;
+          tituloToast = "Póliza actualizada";
+          descToast = "Se ha actualizado correctamente la póliza";
         } else {
           objForm.id = Date.now();
           this._arrayPolizas.push(objForm);
+          tituloToast = "Póliza registrada";
+          descToast = "Se ha registrado correctamente la póliza";
         }
 
         guardarDatosLocal(this._list, this._arrayPolizas);
@@ -244,11 +252,7 @@ class PolizasPage extends HTMLElement {
 
         this.actualizarInterfaz(this._arrayPolizas);
         this._compTable.getModal().close();
-        notificarToast(
-          "exito",
-          "Póliza registrada",
-          "Se ha registrado correctamente la póliza",
-        );
+        notificarToast("exito", tituloToast, descToast);
       }
     });
 
@@ -284,20 +288,25 @@ class PolizasPage extends HTMLElement {
 
     this.addEventListener("tabla-click", (e) => {
       let fila = e.detail.fila;
-      let filaId = fila.dataset.id;
+      let filaId = +fila.dataset.id;
       let btnAccion = e.detail.btnData;
 
       if (btnAccion == "eliminar") {
+        if (comprobarRelacion(filaId, "listaPagos", "poliza")) {
+          notificarToast(
+            "info",
+            "Póliza no eliminada",
+            "La póliza no puede ser eliminada, tiene un pago vinculado",
+          );
+
+          return;
+        }
         let filaIndex = this._arrayPolizas.findIndex(
-          (elem) => elem.id == +filaId,
+          (elem) => elem.id == filaId,
         );
 
         this._arrayPolizas.splice(filaIndex, 1);
         guardarDatosLocal(this._list, this._arrayPolizas);
-        console.log("Boton eliminar pulsado");
-        console.log(this._arrayPolizas);
-        // compTable.pintarDatos(this._arrayClientes);
-        // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
         this.actualizarInterfaz(this._arrayPolizas);
         notificarToast(
           "exito",
@@ -323,10 +332,6 @@ class PolizasPage extends HTMLElement {
     });
 
     this.actualizarInterfaz(this._arrayPolizas);
-  }
-
-  sumarCantidades(arr) {
-    return arr.reduce((sum, current) => sum + +current["precio-anual"], 0);
   }
 
   actualizarInterfaz(arr) {
@@ -370,7 +375,14 @@ class PolizasPage extends HTMLElement {
 
     console.log(this._arrayClientes);
 
-    let objDatos = [{ titulo: "Registros", valor: arr.length, tipo: "number" }];
+    let objDatos = [
+      { titulo: "Registros", valor: arr.length, tipo: "number" },
+      {
+        titulo: "Total precio contratado",
+        valor: sumarCantidades(arr, "precio-contratado"),
+        tipo: "money",
+      },
+    ];
 
     this._compCardsInfo.pintarTarjetas = objDatos;
     this._compTable.pintarDatos(objPolizasTraducidas);
