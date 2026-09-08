@@ -5,26 +5,27 @@ import { guardarDatosLocal } from "./utils.js";
 class TableDatos extends HTMLElement {
   constructor() {
     super(); //LLama al constructor de htmlElement
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: "open" });
     this._modalExterno = null;
     this._btnCerrar = null;
     this._arObj = {};
+    this._buscadorElemento = null;
   }
 
   render() {
-
-    const clase = this.getAttribute('class');
-    const idTable = this.getAttribute('id');
+    const clase = this.getAttribute("class");
+    const idTable = this.getAttribute("id");
     const dataTable = this.dataset.lista;
-    const colums = this.getAttribute('colums');
-    const btnRegistroLabel = this.getAttribute('btn-registro-label') || "Nuevo Registro";
-    const dataColumsMoney = this.getAttribute('colums-money');
+    const colums = this.getAttribute("colums");
+    const btnRegistroLabel =
+      this.getAttribute("btn-registro-label") || "Nuevo Registro";
+    const dataColumsMoney = this.getAttribute("colums-money");
     const dataColumn = this.dataset.nameCol;
     const dataType = this.dataset.type;
 
-    let arrayColums = colums.split(',');
+    let arrayColums = colums.split(",");
 
-    console.log(arrayColums)
+    console.log(arrayColums);
 
     this.shadowRoot.innerHTML = `
 
@@ -129,42 +130,72 @@ table th {
 width: 10px;
 }
 
+.buscador-tabla{
+box-sizing: border-box;
+    width: 100%;
+    max-width: 600px;
+    height: 55px;
+    border-radius: 15px;
+    font-size: 16px;
+    border: 1px solid transparent;
+    background: hsl(0, 0%, 97%);
+    padding: 10px;
+
+    &:hover{
+      background: white;
+      border-color: hsl(0, 1%, 90%);
+    }
+
+    &:focus{
+      border-color: hsl(0, 1%, 90%);
+      outline: none;
+    }
+}
+
+.no-resultados{
+    text-align: center;
+      vertical-align: middle;
+  padding: 20px;
+  color: #666;
+}
 
 
 </style>
-
-
-
-
     <div class="datosContainer">
       <div class="datosContainerHeader">
         <button class="btn-agregar btn-general" id="abrir">${btnRegistroLabel}</button>
       </div>
 
+      <input id="buscador-tabla" type="text" class="buscador-tabla" placeholder="¿Qué estas buscando?"> </input>
+
+
       <table id="${idTable}" data-lista="${dataTable}">
+
         <colgroup>
-          ${arrayColums.map(column => {
-      return "<col />"
-    }).join("")}
+          ${arrayColums
+            .map((column) => {
+              return "<col />";
+            })
+            .join("")}
         </colgroup>
 
         <thead>
           <tr>
-          ${arrayColums.map(column => {
-      let nombre;
-      let tipo = "";
+          ${arrayColums
+            .map((column) => {
+              let nombre;
+              let tipo = "";
 
-      if (column.includes(":")) {
+              if (column.includes(":")) {
+                [nombre, tipo] = column.trim().split(":");
 
-        [nombre, tipo] = column.trim().split(':');
-
-        console.log(nombre, tipo);
-      } else {
-        nombre = column;
-      }
-      return `<th data-name-col="${nombre.trim().toLowerCase().split(" ").join("-")}" data-type="${tipo}"> ${nombre.trim()} </th>`
-    }).join("")
-      }
+                console.log(nombre, tipo);
+              } else {
+                nombre = column;
+              }
+              return `<th data-name-col="${nombre.trim().toLowerCase().split(" ").join("-")}" data-type="${tipo}"> ${nombre.trim()} </th>`;
+            })
+            .join("")}
 
           </tr >
         </thead >
@@ -178,61 +209,86 @@ width: 10px;
     </form-dialog>
 
     </div >
-    `
+    `;
   }
 
   connectedCallback() {
-
     this.render();
 
-    let table = this.shadowRoot.querySelector('table');
-    let elementoFormDialog = this.shadowRoot.querySelector('form-dialog');
-    console.log(elementoFormDialog)
+    let table = this.shadowRoot.querySelector("table");
+    let elementoFormDialog = this.shadowRoot.querySelector("form-dialog");
+    this._buscadorElemento = this.shadowRoot.getElementById("buscador-tabla");
 
-    console.log(table)
-
-    table.addEventListener('click', (e) => {
-      let btn = e.target.closest('button');
-      if (!btn) return;
-      let btnData = btn.dataset.accion;
-      let fila = e.target.closest('tr');
-
-      this.dispatchEvent(new CustomEvent('tabla-click', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          btnData: btnData,
-          fila: fila,
-        }
-      }))
+    this._buscadorElemento.addEventListener("input", (e) => {
+      this.dispatchEvent(
+        new CustomEvent("tabla-buscador", {
+          bubbles: true,
+          composed: true,
+          detail: e.target.value,
+        }),
+      );
     });
 
-    this.addEventListener('modal-cerrado', () => {
-      this.setBtnText('Guardar');
+    table.addEventListener("click", (e) => {
+      let btn = e.target.closest("button");
+      if (!btn) return;
+      let btnData = btn.dataset.accion;
+      let fila = e.target.closest("tr");
+
+      this.dispatchEvent(
+        new CustomEvent("tabla-click", {
+          bubbles: true,
+          composed: true,
+          detail: {
+            btnData: btnData,
+            fila: fila,
+          },
+        }),
+      );
+    });
+
+    this.addEventListener("modal-cerrado", () => {
+      this.setBtnText("Guardar");
       this.limpiarFormulario();
     });
 
-    this.shadowRoot.querySelector('#abrir').addEventListener('click', () => {
-      this.dispatchEvent(new CustomEvent('click-nuevo-registro', {
-        bubbles: true,
-        composed: true,
-      }));
-
-    })
+    this.shadowRoot.querySelector("#abrir").addEventListener("click", () => {
+      this.dispatchEvent(
+        new CustomEvent("click-nuevo-registro", {
+          bubbles: true,
+          composed: true,
+        }),
+      );
+    });
   }
 
   getModal() {
-    return this.shadowRoot.querySelector('form-dialog');
+    return this.shadowRoot.querySelector("form-dialog");
   }
 
   pintarDatos(array) {
-    let table = this.shadowRoot.querySelector('table');
+    let table = this.shadowRoot.querySelector("table");
     let tbody = table.tBodies[0];
     tbody.innerHTML = "";
-    for (let obj of array) {
-      tbody.append(this.crearFila(obj, table))
+
+    if (array.length === 0) {
+      let fila = document.createElement("tr");
+      let celda = document.createElement("td");
+      let noCols = table.tHead.rows[0].cells.length;
+
+      celda.colSpan = noCols;
+      celda.classList.add("no-resultados");
+      celda.textContent =
+        this._buscadorElemento.value === ""
+          ? "No hay registros aún "
+          : "No se encontraron resultados";
+      fila.append(celda);
+      tbody.append(fila);
+    } else {
+      for (let obj of array) {
+        tbody.append(this.crearFila(obj, table));
+      }
     }
-    console.log(table.dataset.lista)
   }
 
   cerrarModal() {
@@ -255,26 +311,26 @@ width: 10px;
   }
 
   setBtnText(txt) {
-    let formDialog = this.shadowRoot.querySelector('form-dialog');
+    let formDialog = this.shadowRoot.querySelector("form-dialog");
 
-    console.log(formDialog)
+    console.log(formDialog);
 
-    formDialog.setAttribute('btn-text', txt);
-
+    formDialog.setAttribute("btn-text", txt);
   }
 
   limpiarFormulario() {
-    let slotForm = this.shadowRoot.querySelector('slot[name="form"]').assignedElements();
-    let form = slotForm.find(element => element.tagName == "FORM");
+    let slotForm = this.shadowRoot
+      .querySelector('slot[name="form"]')
+      .assignedElements();
+    let form = slotForm.find((element) => element.tagName == "FORM");
 
-    if(form){
+    if (form) {
       form.reset();
     }
   }
 
-
   crearFila(objPago) {
-    let table = this.shadowRoot.querySelector('table');
+    let table = this.shadowRoot.querySelector("table");
     let fila = document.createElement("tr");
     let celda = document.createElement("td");
     let noCols = table.tHead.rows[0].cells.length;
@@ -297,15 +353,12 @@ width: 10px;
         div.append(botonEliminar);
         div.append(botonEditar);
 
-        celda.className = "acciones"
+        celda.className = "acciones";
         celda.append(div);
       } else {
-
         if (columnaType.toLowerCase() == "money") {
-
           celda.textContent = formatearValorMoneda(valor);
           celda.dataset.valorOriginal = valor;
-
         } else {
           celda.textContent = valor;
         }
@@ -315,7 +368,6 @@ width: 10px;
     }
     return fila;
   }
-
 }
 
 customElements.define("table-datos", TableDatos);

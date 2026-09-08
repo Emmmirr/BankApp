@@ -63,3 +63,13 @@ export function notificarToast(tipo, titulo, descripcion) {
     }),
   );
 }
+
+export function filtrarDatos(array, textoBusqueda) {
+  let datosEncontrados = array.filter(({ id, ...obj }) =>
+    Object.values(obj).some((v) =>
+      (v ?? "").toString().toLowerCase().includes(textoBusqueda.toLowerCase()),
+    ),
+  );
+
+  return datosEncontrados;
+}

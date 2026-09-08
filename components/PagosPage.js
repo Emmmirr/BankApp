@@ -9,6 +9,7 @@ import {
   sumarCantidades,
   transformarFormAObjeto,
   notificarToast,
+  filtrarDatos,
 } from "./utils.js";
 
 class PagosPage extends HTMLElement {
@@ -28,7 +29,7 @@ class PagosPage extends HTMLElement {
     this._clientesIndex = null;
     this._planesIndex = null;
     this._polizasIndex = null;
-    this._compNotificationToast = null;
+    this._contenidoABuscar = null;
   }
 
   render() {
@@ -155,8 +156,6 @@ class PagosPage extends HTMLElement {
 
     this._list = this.shadowRoot.querySelector("table-datos").dataset.lista;
     this._compTable = this.shadowRoot.querySelector("table-datos");
-    this._compNotificationToast =
-      this.shadowRoot.querySelector("notification-toast");
     this._compCardsInfo = this.shadowRoot.querySelector("cards-info");
     this._arrayPagos = comprobarDatosLocal(this._list);
     this._arrayClientes = comprobarDatosLocal("listaClientes");
@@ -231,6 +230,12 @@ class PagosPage extends HTMLElement {
       console.log(montoPlan);
     });
 
+    this.addEventListener("tabla-buscador", (e) => {
+      this._contenidoABuscar = e.detail;
+
+      this.actualizarInterfaz();
+    });
+
     // this.llenarSelect("cliente", this._arrayPolizas, "id",
     //   (elem) => {
     //     console.log(elem)
@@ -271,7 +276,7 @@ class PagosPage extends HTMLElement {
         // compTable.pintarDatos(this._arrayClientes);
         // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
-        this.actualizarInterfaz(this._arrayPagos);
+        this.actualizarInterfaz();
         this._compTable.getModal().close();
         notificarToast("exito", tituloToast, descToast);
       }
@@ -307,7 +312,7 @@ class PagosPage extends HTMLElement {
         console.log(this._arrayPagos);
         // compTable.pintarDatos(this._arrayClientes);
         // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
-        this.actualizarInterfaz(this._arrayPagos);
+        this.actualizarInterfaz();
         notificarToast(
           "exito",
           "Pago eliminado",
@@ -330,34 +335,20 @@ class PagosPage extends HTMLElement {
         this._compTable.getModal().show();
       }
     });
-    this.actualizarInterfaz(this._arrayPagos);
+    this.actualizarInterfaz();
   }
 
   //Se hizo un solo metodo para todo aquello que se ejecutaba
   //al inicio o al final de alguna accion como al iniciar la pag.
   //despues de eliminar registro o editar uno.
 
-  actualizarInterfaz(arr) {
-    let objDatos = [
-      {
-        titulo: "Total cantidad",
-        valor: sumarCantidades(arr, "monto-pagado"),
-        tipo: "money",
-      },
-      { titulo: "Registros", valor: arr.length, tipo: "number" },
-    ];
+  actualizarInterfaz() {
+    let arrayAUsar;
 
-    let objPagosTraducidos = arr.map((pago) => {
-      console.log(this._polizasIndex);
-
+    let objPagosTraducidos = this._arrayPagos.map((pago) => {
       let poliza = this._polizasIndex[pago?.poliza];
-
       let cliente = this._clientesIndex[poliza?.cliente];
       let plan = this._planesIndex[poliza?.plan]?.nombre;
-
-      console.log(poliza);
-      console.log(cliente);
-      console.log(plan);
 
       return {
         ...pago,
@@ -365,11 +356,28 @@ class PagosPage extends HTMLElement {
         plan: plan ?? "No existe el plan",
       };
     });
-    this._compCardsInfo.pintarTarjetas = objDatos;
-    this._compTable.pintarDatos(objPagosTraducidos);
 
-    // this._compCardsInfo.setAttribute('total-cantidad', sumarCantidades(arr, "amount"));
-    // this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayClientes.length);
+    if (this._contenidoABuscar) {
+      arrayAUsar = filtrarDatos(objPagosTraducidos, this._contenidoABuscar);
+    } else {
+      arrayAUsar = objPagosTraducidos;
+    }
+
+    let objDatos = [
+      {
+        titulo: "Total cantidad",
+        valor: sumarCantidades(arrayAUsar, "monto-pagado"),
+        tipo: "money",
+      },
+      {
+        titulo: "Registros",
+        valor: arrayAUsar.length,
+        tipo: "number",
+      },
+    ];
+
+    this._compCardsInfo.pintarTarjetas = objDatos;
+    this._compTable.pintarDatos(arrayAUsar);
   }
 
   llenarSelect(idElement, array, campoValor, campoTexto) {
