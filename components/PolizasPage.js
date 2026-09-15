@@ -11,6 +11,8 @@ import {
   notificarToast,
   sumarCantidades,
   comprobarRelacion,
+  filtrarDatos,
+  llenarSelect,
 } from "./utils.js";
 
 class PolizasPage extends HTMLElement {
@@ -25,6 +27,7 @@ class PolizasPage extends HTMLElement {
     this._compCardsInfo = null;
     this._arrayClientes = null;
     this._arrayPlanes = null;
+    this._contenidoABuscar = null;
   }
 
   render() {
@@ -173,6 +176,7 @@ class PolizasPage extends HTMLElement {
     let form = this.shadowRoot.querySelector("form");
     let select = this.shadowRoot.querySelector("select");
     const selectPlan = this.shadowRoot.querySelector("#plan");
+    const selectCliente = this.shadowRoot.querySelector("#cliente");
     const inputPrecio = this.shadowRoot.querySelector("#precio-contratado");
     const inputFechaEmision = this.shadowRoot.querySelector("#fecha-emision");
 
@@ -187,14 +191,14 @@ class PolizasPage extends HTMLElement {
       }),
     );
 
-    this.llenarSelect(
-      "cliente",
+    llenarSelect(
+      selectCliente,
       this._arrayClientes,
       "id",
       (elem) =>
         `${elem.nombre} ${elem["apellido-paterno"] ?? ""} ${elem["apellido-materno"] ?? ""}`,
     );
-    this.llenarSelect("plan", this._arrayPlanes, "id", "nombre");
+    llenarSelect(selectPlan, this._arrayPlanes, "id", "nombre");
 
     selectPlan.addEventListener("change", (e) => {
       let plan = this._arrayPlanes.find((plan) => plan.id == e.target.value);
@@ -250,10 +254,16 @@ class PolizasPage extends HTMLElement {
         // compTable.pintarDatos(this._arrayClientes);
         // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
-        this.actualizarInterfaz(this._arrayPolizas);
+        this.actualizarInterfaz();
         this._compTable.getModal().close();
         notificarToast("exito", tituloToast, descToast);
       }
+    });
+
+    this.addEventListener("tabla-buscador", (e) => {
+      this._contenidoABuscar = e.detail;
+
+      this.actualizarInterfaz();
     });
 
     // this.addEventListener('open-modal', (e) => {
@@ -307,7 +317,7 @@ class PolizasPage extends HTMLElement {
 
         this._arrayPolizas.splice(filaIndex, 1);
         guardarDatosLocal(this._list, this._arrayPolizas);
-        this.actualizarInterfaz(this._arrayPolizas);
+        this.actualizarInterfaz();
         notificarToast(
           "exito",
           "Póliza eliminada",
@@ -331,11 +341,13 @@ class PolizasPage extends HTMLElement {
       }
     });
 
-    this.actualizarInterfaz(this._arrayPolizas);
+    this.actualizarInterfaz();
   }
 
-  actualizarInterfaz(arr) {
-    let objPolizasTraducidas = arr.map((elemento) => {
+  actualizarInterfaz() {
+    let arrayAUsar;
+
+    let objPolizasTraducidas = this._arrayPolizas.map((elemento) => {
       console.log(elemento.cliente);
 
       // this._arrayPagos.map(elem => {
@@ -354,7 +366,6 @@ class PolizasPage extends HTMLElement {
         (elem) => elem.id == elemento.plan,
       );
 
-      console.log(nombreCliente);
       return {
         ...elemento,
         cliente: nombreCliente
@@ -371,47 +382,26 @@ class PolizasPage extends HTMLElement {
       // return {...elemento, cliente:  nombreCliente?.nombre ?? `No existe el usuario: ${elemento.cliente}` , plan : nombrePlan?.nombre ?? "No existe el plan"}
     });
 
-    console.log(objPolizasTraducidas);
-
-    console.log(this._arrayClientes);
+    if (this._contenidoABuscar) {
+      arrayAUsar = filtrarDatos(objPolizasTraducidas, this._contenidoABuscar);
+    } else {
+      arrayAUsar = objPolizasTraducidas;
+    }
 
     let objDatos = [
-      { titulo: "Registros", valor: arr.length, tipo: "number" },
+      { titulo: "Registros", valor: arrayAUsar.length, tipo: "number" },
       {
         titulo: "Total precio contratado",
-        valor: sumarCantidades(arr, "precio-contratado"),
+        valor: sumarCantidades(arrayAUsar, "precio-contratado"),
         tipo: "money",
       },
     ];
 
     this._compCardsInfo.pintarTarjetas = objDatos;
-    this._compTable.pintarDatos(objPolizasTraducidas);
+    this._compTable.pintarDatos(arrayAUsar);
 
     // this._compCardsInfo.setAttribute('total-cantidad', this.sumarCantidades(arr));
     // this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayPolizas.length);
-  }
-
-  llenarSelect(idElement, array, campoValor, campoTexto) {
-    if (array) {
-      const select = this.shadowRoot.getElementById(idElement);
-      array.forEach((element) => {
-        const option = document.createElement("option");
-        option.value = element[campoValor];
-
-        console.log(campoTexto);
-        console.log(typeof campoTexto);
-
-        if (typeof campoTexto == "string") {
-          option.textContent = element[campoTexto];
-        } else if (typeof campoTexto == "function") {
-          option.textContent = campoTexto(element);
-        } else {
-          option.textContent = "Tipo de dato inválido";
-        }
-
-        select.append(option);
-      });
-    }
   }
 }
 

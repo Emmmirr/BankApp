@@ -73,3 +73,63 @@ export function filtrarDatos(array, textoBusqueda) {
 
   return datosEncontrados;
 }
+
+export function crearIndice(array, campoClave, campoAGuardar = null) {
+  if (!Array.isArray(array)) return {};
+  return array.reduce((acc, objArray) => {
+    acc[objArray[campoClave]] =
+      campoAGuardar === null ? objArray : objArray[campoAGuardar];
+    return acc;
+  }, {});
+}
+
+export function llenarSelect(elemento, array, campoValor, campoTexto) {
+  const fragment = document.createDocumentFragment();
+  console.log(elemento);
+  console.log(array);
+  console.log(campoValor);
+  console.log(typeof campoTexto);
+  if (!elemento || !Array.isArray(array)) return;
+
+  array.forEach((el) => {
+    const option = document.createElement("option");
+    option.value = el[campoValor];
+
+    if (typeof campoTexto == "string") {
+      option.textContent = el[campoTexto];
+    } else if (typeof campoTexto == "function") {
+      option.textContent = campoTexto(el);
+    } else {
+      option.textContent = "Tipo de dato inválido";
+    }
+
+    fragment.append(option);
+  });
+
+  elemento.append(fragment);
+}
+
+export function guardarRegistro({ form, filaEnEdicion, array, list, funcion }) {
+  if (form.reportValidity()) {
+    let objForm = transformarFormAObjeto(form);
+    let tituloToast;
+    let descToast;
+
+    if (filaEnEdicion) {
+      let filaIndex = array.findIndex((elem) => elem.id == +filaEnEdicion);
+      objForm.id = filaEnEdicion;
+      array[filaIndex] = objForm;
+    } else {
+      objForm.id = Date.now();
+      array.push(objForm);
+    }
+
+    guardarDatosLocal(list, array);
+    // compTable.pintarDatos(this._arrayClientes);
+    // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
+
+    // this.actualizarInterfaz();
+    // this._compTable.getModal().close();
+    funcion(Boolean(filaEnEdicion));
+  }
+}

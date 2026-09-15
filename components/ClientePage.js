@@ -10,6 +10,7 @@ import {
   comprobarRelacion,
   transformarFormAObjeto,
   notificarToast,
+  filtrarDatos,
 } from "./utils.js";
 
 class ClientePage extends HTMLElement {
@@ -22,6 +23,7 @@ class ClientePage extends HTMLElement {
     this._modal = null;
     this._compTable - null;
     this._compCardsInfo = null;
+    this._contenidoABuscar = null;
   }
 
   render() {
@@ -149,7 +151,7 @@ class ClientePage extends HTMLElement {
         // compTable.pintarDatos(this._arrayClientes);
         // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
-        this.actualizarInterfaz(this._arrayClientes);
+        this.actualizarInterfaz();
         this._compTable.getModal().close();
         notificarToast("exito", tituloToast, descToast);
       }
@@ -192,7 +194,7 @@ class ClientePage extends HTMLElement {
 
         this._arrayClientes.splice(filaIndex, 1);
         guardarDatosLocal(this._list, this._arrayClientes);
-        this.actualizarInterfaz(this._arrayClientes);
+        this.actualizarInterfaz();
         notificarToast(
           "exito",
           "Cliente eliminado",
@@ -215,16 +217,33 @@ class ClientePage extends HTMLElement {
         this._compTable.getModal().show();
       }
     });
+
+    this.addEventListener("tabla-buscador", (e) => {
+      this._contenidoABuscar = e.detail;
+
+      this.actualizarInterfaz();
+    });
   }
 
   //Se hizo un solo metodo para todo aquello que se ejecutaba
   //al inicio o al final de alguna accion como al iniciar la pag.
   //despues de eliminar registro o editar uno.
 
-  actualizarInterfaz(arr) {
-    let objDatos = [{ titulo: "Registros", valor: arr.length, tipo: "number" }];
+  actualizarInterfaz() {
+    let arrayAUsar;
+
+    if (this._contenidoABuscar) {
+      arrayAUsar = filtrarDatos(this._arrayClientes, this._contenidoABuscar);
+    } else {
+      arrayAUsar = this._arrayClientes;
+    }
+
+    let objDatos = [
+      { titulo: "Registros", valor: arrayAUsar.length, tipo: "number" },
+    ];
+
     this._compCardsInfo.pintarTarjetas = objDatos;
-    this._compTable.pintarDatos(arr);
+    this._compTable.pintarDatos(arrayAUsar);
 
     // this._compCardsInfo.setAttribute('total-cantidad', sumarCantidades(arr, "amount"));
     // this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayClientes.length);

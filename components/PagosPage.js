@@ -10,6 +10,9 @@ import {
   transformarFormAObjeto,
   notificarToast,
   filtrarDatos,
+  crearIndice,
+  llenarSelect,
+  guardarRegistro,
 } from "./utils.js";
 
 class PagosPage extends HTMLElement {
@@ -20,7 +23,7 @@ class PagosPage extends HTMLElement {
     this._filaEnEdicion = null;
     this._list = null;
     this._modal = null;
-    this._compTable - null;
+    this._compTable = null;
     this._compCardsInfo = null;
     this._arrayPagos = null;
     this._arrayPolizas = null;
@@ -172,25 +175,32 @@ class PagosPage extends HTMLElement {
     // compTable.pintarDatos(this._arrayClientes);
     // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
 
-    this._polizasIndex = this._arrayPolizas.reduce((acc, poliza) => {
-      acc[poliza.id] = poliza;
-      return acc;
-    }, {});
+    // this._polizasIndex = this._arrayPolizas.reduce((acc, poliza) => {
+    //   acc[poliza.id] = poliza;
+    //   return acc;
+    // }, {});
+
+    this._polizasIndex = crearIndice(this._arrayPolizas, "id");
 
     console.log(this._polizasIndex);
 
-    this._clientesIndex = this._arrayClientes.reduce((acc, cliente) => {
-      acc[cliente.id] = cliente.nombre;
-      return acc;
-    }, {});
+    // this._clientesIndex = this._arrayClientes.reduce((acc, cliente) => {
+    //   acc[cliente.id] = cliente.nombre;
+    //   return acc;
+    // }, {});
 
-    this._planesIndex = this._arrayPlanes.reduce((acc, plan) => {
-      acc[plan.id] = plan;
+    this._clientesIndex = crearIndice(this._arrayClientes, "id", "nombre");
 
-      return acc;
-    }, {});
+    console.log(this._clientesIndex);
 
-    this.llenarSelect("poliza", this._arrayPolizas, "id", (elem) => {
+    this._planesIndex = crearIndice(this._arrayPlanes, "id");
+    // this._planesIndex = this._arrayPlanes.reduce((acc, plan) => {
+    //   acc[plan.id] = plan;
+
+    //   return acc;
+    // }, {});
+
+    llenarSelect(selectPoliza, this._arrayPolizas, "id", (elem) => {
       let cliente = this._clientesIndex[elem.cliente] ?? "No existe el cliente";
       let plan = this._planesIndex[elem.plan].nombre ?? "No existe el plan";
 
@@ -252,34 +262,54 @@ class PagosPage extends HTMLElement {
     // this.llenarSelect("plan", this._arrayPlanes, "id", "nombre" );
 
     this.addEventListener("click-guardar", () => {
-      if (form.reportValidity()) {
-        let objForm = transformarFormAObjeto(form);
-        let tituloToast;
-        let descToast;
+      guardarRegistro({
+        form: form,
+        filaEnEdicion: this._filaEnEdicion,
+        array: this._arrayPagos,
+        list: this._list,
+        funcion: (datos) => {
+          let tituloToast;
+          let descToast;
 
-        if (this._filaEnEdicion) {
-          let filaIndex = this._arrayPagos.findIndex(
-            (elem) => elem.id == +this._filaEnEdicion,
-          );
-          objForm.id = this._filaEnEdicion;
-          this._arrayPagos[filaIndex] = objForm;
-          tituloToast = "Pago actualizado";
-          descToast = "Se ha actualizado correctamente el pago";
-        } else {
-          objForm.id = Date.now();
-          this._arrayPagos.push(objForm);
-          tituloToast = "Pago registrado";
-          descToast = "Se ha registrado correctamente el pago";
-        }
+          this.actualizarInterfaz();
+          this._compTable.getModal().close();
 
-        guardarDatosLocal(this._list, this._arrayPagos);
-        // compTable.pintarDatos(this._arrayClientes);
-        // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
+          if (datos) {
+            tituloToast = "Pago actualizado";
+            descToast = "Se ha actualizado correctamente el pago";
+          } else {
+            tituloToast = "Pago registrado";
+            descToast = "Se ha registrado correctamente el pago";
+          }
 
-        this.actualizarInterfaz();
-        this._compTable.getModal().close();
-        notificarToast("exito", tituloToast, descToast);
-      }
+          notificarToast("exito", tituloToast, descToast);
+        },
+      });
+      // if (form.reportValidity()) {
+      //   let objForm = transformarFormAObjeto(form);
+      //   let tituloToast;
+      //   let descToast;
+      //   if (this._filaEnEdicion) {
+      //     let filaIndex = this._arrayPagos.findIndex(
+      //       (elem) => elem.id == +this._filaEnEdicion,
+      //     );
+      //     objForm.id = this._filaEnEdicion;
+      //     this._arrayPagos[filaIndex] = objForm;
+      //     tituloToast = "Pago actualizado";
+      //     descToast = "Se ha actualizado correctamente el pago";
+      //   } else {
+      //     objForm.id = Date.now();
+      //     this._arrayPagos.push(objForm);
+      //     tituloToast = "Pago registrado";
+      //     descToast = "Se ha registrado correctamente el pago";
+      //   }
+      //   guardarDatosLocal(this._list, this._arrayPagos);
+      //   // compTable.pintarDatos(this._arrayClientes);
+      //   // compCardInfo.setAttribute('total-cantidad', this.sumarCantidades(this._arrayClientes))
+      //   this.actualizarInterfaz();
+      //   this._compTable.getModal().close();
+      //   notificarToast("exito", tituloToast, descToast);
+      // }
     });
 
     this.addEventListener("click-nuevo-registro", () => {
@@ -378,29 +408,6 @@ class PagosPage extends HTMLElement {
 
     this._compCardsInfo.pintarTarjetas = objDatos;
     this._compTable.pintarDatos(arrayAUsar);
-  }
-
-  llenarSelect(idElement, array, campoValor, campoTexto) {
-    if (array) {
-      const select = this.shadowRoot.getElementById(idElement);
-      array.forEach((element) => {
-        const option = document.createElement("option");
-        option.value = element[campoValor];
-
-        console.log(campoTexto);
-        console.log(typeof campoTexto);
-
-        if (typeof campoTexto == "string") {
-          option.textContent = element[campoTexto];
-        } else if (typeof campoTexto == "function") {
-          option.textContent = campoTexto(element);
-        } else {
-          option.textContent = "Tipo de dato inválido";
-        }
-
-        select.append(option);
-      });
-    }
   }
 }
 

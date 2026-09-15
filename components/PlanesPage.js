@@ -10,6 +10,7 @@ import {
   transformarFormAObjeto,
   notificarToast,
   comprobarRelacion,
+  filtrarDatos,
 } from "./utils.js";
 
 class PlanesPage extends HTMLElement {
@@ -22,6 +23,7 @@ class PlanesPage extends HTMLElement {
     this._modal = null;
     this._compTable - null;
     this._compCardsInfo = null;
+    this._contenidoABuscar = null;
   }
 
   render() {
@@ -176,6 +178,12 @@ class PlanesPage extends HTMLElement {
       }
     });
 
+    this.addEventListener("tabla-buscador", (e) => {
+      this._contenidoABuscar = e.detail;
+
+      this.actualizarInterfaz();
+    });
+
     this.addEventListener("click-nuevo-registro", () => {
       this._compTable.getModal().show();
     });
@@ -232,18 +240,25 @@ class PlanesPage extends HTMLElement {
     });
   }
 
-  actualizarInterfaz(arr) {
+  actualizarInterfaz() {
+    let arrayAUsar;
+
+    if (this._contenidoABuscar) {
+      arrayAUsar = filtrarDatos(this._arrayPlanes, this._contenidoABuscar);
+    } else {
+      arrayAUsar = this._arrayPlanes;
+    }
     let objDatos = [
       {
         titulo: "Total cantidad",
-        valor: sumarCantidades(arr, "precio-anual"),
+        valor: sumarCantidades(arrayAUsar, "precio-anual"),
         tipo: "money",
       },
-      { titulo: "Registros", valor: arr.length, tipo: "number" },
+      { titulo: "Registros", valor: arrayAUsar.length, tipo: "number" },
     ];
 
     this._compCardsInfo.pintarTarjetas = objDatos;
-    this._compTable.pintarDatos(arr);
+    this._compTable.pintarDatos(arrayAUsar);
     // this._compCardsInfo.setAttribute('total-cantidad', sumarCantidades(arr, "precio-anual"));
     // this._compCardsInfo.setAttribute('total-cantidad-registros', this._arrayPlanes.length);
   }
