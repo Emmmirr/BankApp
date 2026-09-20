@@ -20,8 +20,11 @@ class FormDialog extends HTMLElement {
             dialog {
                 border: none;
                 border-radius: 10px;
-                height: 800px;
-                width: 600px;
+                height: auto;
+                min-height: 600px;
+                max-height: 90vh;
+                width: 96%;
+                max-width: 600px;
                 margin: auto;
 
                 &::backdrop {
@@ -29,24 +32,22 @@ class FormDialog extends HTMLElement {
                 }
             }
 
+            ::slotted(form){
+              display: grid;
+              grid-template-columns: repeat(auto-fit,minmax(250px, 1fr));
+              gap: 10px;
+              width: 100%;
 
-                        .dialogoContainer {
+            }
+
+
+            .dialogoContainer {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 gap: 25px;
                 height: 100%;
                 padding: 20px;
-
-                form {
-                    width: 100%;
-                    display: flex;
-                    flex: 1;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    gap: 10px;
-                }
             }
 
 

@@ -1,15 +1,13 @@
 import { formatearValorMoneda } from "/components/utils.js";
 import { guardarDatosLocal } from "./components/utils.js";
-import Router from "./router.js"
-import TableDatos from "/components/TableDatos.js"
+import Router from "./router.js";
+import TableDatos from "/components/TableDatos.js";
 import PageHeader from "./components/PageHeader.js";
 import FormDialog from "./components/FormDialog.js";
 
 let boton = document.getElementById("boton-guardar");
 
-
 let objArray = {};
-
 
 let clienteValue = document.getElementById("client-name");
 let datePago = document.getElementById("date-pago");
@@ -24,7 +22,7 @@ let forumlarioDescuentos = document.getElementById("formDatosDescuentos");
 let main = document.getElementById("content-main");
 let filaEnEdicion = null;
 let tarjetaTotal = document.getElementById("tarjeta-total");
-let tarjetaRegistros = document.getElementById("tarjeta-registros")
+let tarjetaRegistros = document.getElementById("tarjeta-registros");
 const dialogo = document.getElementById("miDialogo");
 const abrir = document.getElementById("abrir");
 const cerrar = document.getElementById("cerrar");
@@ -51,7 +49,6 @@ export function actualizarTotal(table) {
   tarjetaTotal.textContent = formatearValorMoneda(suma);
   tarjetaRegistros.textContent = noFilas;
 
-
   // console.log(suma);
 
   // console.log(noFilas)
@@ -61,7 +58,6 @@ export function actualizarTotal(table) {
 
 function identificarTabla(e) {
   let table = e.target.closest("table");
-
 
   // console.log(thead)
   // console.log(form);
@@ -86,18 +82,17 @@ function identificarTabla(e) {
   // console.log(celda);
   if (!boton) return;
   if (boton.dataset.accion == "eliminar") {
-
-    let filaEncontrada = objArray[table.dataset.lista].findIndex(obj => obj.id == +fila.dataset.id);
+    let filaEncontrada = objArray[table.dataset.lista].findIndex(
+      (obj) => obj.id == +fila.dataset.id,
+    );
     objArray[table.dataset.lista].splice(filaEncontrada, 1);
     fila.remove();
-    console.log(filaEncontrada)
+    console.log(filaEncontrada);
     guardarDatosLocal(table.dataset.lista, objArray[table.dataset.lista]);
     actualizarTotal(table);
-
   }
 
   if (boton.dataset.accion == "editar") {
-
     // console.log(boton.dataset.accion == "cancelar");
 
     if (boton.dataset.accion == "cancelar") return;
@@ -121,26 +116,20 @@ function identificarTabla(e) {
       // console.log(celdas)
 
       if (form.elements[nombreCampo]) {
-
         if (form.elements[nombreCampo].name == "amount") {
           // console.log(celdas[i].dataset.valorOriginal);
           form.elements[nombreCampo].value = celdas[i].dataset.valorOriginal;
         } else {
           form.elements[nombreCampo].value = celdas[i].innerText;
         }
-
       }
-
     }
 
     dialogo.showModal();
-
   }
-
 }
 
 main.addEventListener("click", identificarTabla);
-
 
 function crearFila(objPago, table) {
   let fila = document.createElement("tr");
@@ -165,12 +154,9 @@ function crearFila(objPago, table) {
       div.append(botonEditar);
       celda.append(div);
     } else {
-
       if (columna == "amount") {
-
         celda.textContent = formatearValorMoneda(valor);
         celda.dataset.valorOriginal = valor;
-
       } else {
         celda.textContent = valor;
       }
@@ -181,9 +167,7 @@ function crearFila(objPago, table) {
   return fila;
 }
 
-
 function agregarDatos(e) {
-
   e.preventDefault();
   let formData = new FormData(e.target);
   let nombreObtenido = e.target.dataset;
@@ -193,11 +177,8 @@ function agregarDatos(e) {
   let botonForm = e.target.querySelector('button[type="submit"]');
   let objCliente = {};
 
-
   if (filaEnEdicion == null) {
-
     for (let i = 0; i < noFilas; i++) {
-
       let columna = table.tHead.rows[0].cells[i].dataset.nameCol;
       let valor = formData.get(columna);
 
@@ -208,16 +189,15 @@ function agregarDatos(e) {
       } else {
         objCliente[columna] = valor;
       }
-
     }
 
     objCliente.id = Date.now();
     objArray[table.dataset.lista].push(objCliente);
     tbody.append(crearFila(objCliente, table));
-
   } else {
-
-    let objEncontrado = objArray[table.dataset.lista].find(obj => obj.id == +filaEnEdicion.dataset.id);
+    let objEncontrado = objArray[table.dataset.lista].find(
+      (obj) => obj.id == +filaEnEdicion.dataset.id,
+    );
 
     for (let i = 0; i < noFilas; i++) {
       let columna = table.tHead.rows[0].cells[i].dataset.nameCol;
@@ -239,19 +219,15 @@ function agregarDatos(e) {
   dialogo.close();
   actualizarTotal(table);
   guardarDatosLocal(table.dataset.lista, objArray[table.dataset.lista]);
-  console.log(JSON.parse(localStorage.listaPagos))
+  console.log(JSON.parse(localStorage.listaPagos));
 }
 
-
-
 function limpiarFormulario(e) {
-
   let dialog = e.target;
 
   let form = dialog.querySelector("form");
 
   let botonGuardar = form.querySelector('button[type="submit"]');
-
 
   botonGuardar.textContent = "Guardar";
 
@@ -260,63 +236,47 @@ function limpiarFormulario(e) {
   if (filaEnEdicion) {
     filaEnEdicion = null;
   }
-
 }
 
-
-
-function pintarDatos() {
-
-}
-
+function pintarDatos() {}
 
 let tableAll = document.querySelectorAll("table[data-lista]");
 
-tableAll.forEach(tabla => {
+tableAll.forEach((tabla) => {
   console.log(tabla);
   if (localStorage[tabla.dataset.lista]) {
     let tbody = tabla.tBodies[0];
     let datosConvertidos = JSON.parse(localStorage[tabla.dataset.lista]);
-    console.log(datosConvertidos)
+    console.log(datosConvertidos);
     objArray[tabla.dataset.lista] = datosConvertidos;
 
     for (let obj of objArray[tabla.dataset.lista]) {
-
-      tbody.append(crearFila(obj, tabla))
+      tbody.append(crearFila(obj, tabla));
 
       // console.log(crearFila(objArray[tabla.dataset.lista][obj], tabla))
-
     }
-    console.log(objArray[tabla.dataset.lista])
-
+    console.log(objArray[tabla.dataset.lista]);
   } else {
     objArray[tabla.dataset.lista] = [];
   }
 
   actualizarTotal(tabla);
+});
 
-})
-
-
-
-console.log(localStorage)
+console.log(localStorage);
 
 abrir.addEventListener("click", () => dialogo.showModal());
 
-cerrar.addEventListener("click", () => dialogo.close())
+cerrar.addEventListener("click", () => dialogo.close());
 
 dialogo.addEventListener("close", limpiarFormulario);
 
 formulario.addEventListener("submit", agregarDatos);
-
-
 
 window.app = {};
 app.router = Router;
 
 window.addEventListener("DOMContentLoaded", () => {
   app.router.init();
-})
-
-
-
+  Router.nav(window.location.pathname, false);
+});

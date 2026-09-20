@@ -47,10 +47,14 @@ body {
     display: flex;
     padding-left: 10px;
     height: 30px;
+  }
 
-    &:hover {
-      background: white;
-    }
+  ul {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    gap: 20px;
+    width: 100%;
   }
 }
 
@@ -60,14 +64,6 @@ main {
   flex: 1;
   padding: 5px;
   gap: 65px;
-}
-
-ul {
-  display: flex;
-  flex-direction: column;
-  list-style: none;
-  gap: 20px;
-  width: 100%;
 }
 
 table {
@@ -279,32 +275,6 @@ dialog {
   border-right: 1px solid #eee;
 }
 
-.form-section {
-  display: flex;
-  gap: 35px;
-  width: 100%;
-  justify-content: center;
-
-  input {
-    height: 35px;
-    width: 250px;
-    max-width: 300px;
-    border-radius: 4px;
-    background: hsl(0, 0%, 97%);
-    border: 1px solid hsl(0, 0%, 80%);
-    padding: 10px;
-
-    &:user-invalid {
-      border-color: red;
-    }
-  }
-
-  h2 {
-    font-size: 15px;
-    font-weight: normal;
-  }
-}
-
 .button-form-section {
   display: flex;
   margin-top: auto;
@@ -315,4 +285,60 @@ dialog {
 
 .texto-rojo {
   color: red;
+}
+
+.activo {
+  background: white;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 56px;
+  }
+  .sidebar {
+    display: flex;
+    position: fixed;
+    padding-top: 0;
+    bottom: 0;
+    left: 5%;
+    right: 5%;
+    width: 90%;
+    border-radius: 16px;
+    margin-bottom: 10px;
+    height: 56px;
+    z-index: 100;
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      text-decoration: none;
+      &:hover {
+      }
+
+      &:active {
+        background: white;
+        border-radius: 16px;
+      }
+    }
+
+    li {
+      height: 80%;
+      padding-left: 0;
+    }
+
+    ul {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-evenly;
+      list-style: none;
+    }
+  }
+
+  .activo {
+    background: red;
+    border-radius: 16px;
+  }
 }

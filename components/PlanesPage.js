@@ -28,7 +28,7 @@ class PlanesPage extends HTMLElement {
 
   render() {
     this.shadowRoot.innerHTML = `
-
+        <link rel="stylesheet" href="./forms.css" />
         <style>
                 *{
             margin : 0;
@@ -41,50 +41,7 @@ class PlanesPage extends HTMLElement {
               gap: 100px;
             }
 
-            .form-section {
-                display: flex;
-                gap: 35px;
-                width: 100%;
-                justify-content: center;
-
-                input {
-                    height: 35px;
-                    width: 250px;
-                    max-width: 300px;
-                    border-radius: 4px;
-                    background: hsl(0, 0%, 97%);
-                    border: 1px solid hsl(0, 0%, 80%);
-                    padding: 10px;
-
-                    &:user-invalid{
-                    border-color: red;
-                    }
-                }
-
-                select {
-
-                    height: 35px;
-                    width: 250px;
-                    max-width: 300px;
-                    border-radius: 4px;
-                    background: hsl(0, 0%, 97%);
-                    border: 1px solid hsl(0, 0%, 80%);
-                    padding: 10px;
-                
-                }
-
-                h2 {
-                    font-size: 15px;
-                    font-weight: normal;
-                }
-
-                label {
-                  display: block;
-                  font-size: 15px;
-                  font-weight: normal;
-                }
-            }
-
+            
 
         </style>
           <page-header title="Planes">
@@ -100,7 +57,7 @@ class PlanesPage extends HTMLElement {
           <form slot="form" action="" id="formPlanes" data-table="table-planes">
 
 
-          <div class="form-section">
+
             <div>
             <h2>Nombre</h2>
               <input type="text" name="nombre" id="nombre" required />
@@ -110,18 +67,12 @@ class PlanesPage extends HTMLElement {
             <h2>Descripcion</h2>
               <input type="text" name="descripcion" id="descripcion" required />
             </div>
-          </div>
 
-          <div class="form-section">
+
             <div>
               <h2>Precio Anual</h2>
               <input type="number" step="0.01" name="precio-anual" id="precio-anual" />
             </div>
-
-            <div>
-
-            </div>
-          </div>
 
         </form>
         </table-datos>

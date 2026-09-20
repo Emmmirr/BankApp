@@ -37,7 +37,7 @@ class PagosPage extends HTMLElement {
 
   render() {
     this.shadowRoot.innerHTML = `
-
+        <link rel="stylesheet" href="./forms.css" />
         <style>
                 *{
             margin : 0;
@@ -50,49 +50,6 @@ class PagosPage extends HTMLElement {
               gap: 100px;
             }
 
-            .form-section {
-                display: flex;
-                gap: 35px;
-                width: 100%;
-                justify-content: center;
-
-                input {
-                    height: 35px;
-                    width: 250px;
-                    max-width: 300px;
-                    border-radius: 4px;
-                    background: hsl(0, 0%, 97%);
-                    border: 1px solid hsl(0, 0%, 80%);
-                    padding: 10px;
-
-                    &:user-invalid{
-                    border-color: red;
-                    }
-                }
-
-                select {
-
-                    height: 35px;
-                    width: 250px;
-                    max-width: 300px;
-                    border-radius: 4px;
-                    background: hsl(0, 0%, 97%);
-                    border: 1px solid hsl(0, 0%, 80%);
-                    padding: 10px;
-                
-                }
-
-                h2 {
-                    font-size: 15px;
-                    font-weight: normal;
-                }
-
-                label {
-                display: block;
-                  font-size: 15px;
-                  font-weight: normal;
-                }
-            }
 
 
         </style>
@@ -110,7 +67,6 @@ class PagosPage extends HTMLElement {
 
           <form slot="form" action="" id="formDatos" data-table="table-pagos">
 
-          <div class="form-section">
             <div>
               <label for="poliza">Póliza:</label>
               
@@ -123,10 +79,9 @@ class PagosPage extends HTMLElement {
               <h2>Plan</h2>
               <input readonly type="text" name="plan" id="plan" />
             </div>
-          </div>
 
 
-          <div class="form-section">
+
             <div>
               <h2>Monto Pagado</h2>
               <input readonly type="number" name="monto-pagado" id="monto-pagado" required />
@@ -136,9 +91,9 @@ class PagosPage extends HTMLElement {
               <h2>Fecha de pago</h2>
               <input type="date" name="fecha-pago" id="fecha-pago" required />
             </div>
-          </div>
 
-          <div class="form-section">
+
+
             <div>
               <h2>Fecha de Vencimiento</h2>
               <input type="date" name="fecha-vencimiento" id="fecha-vencimiento" required />
@@ -148,7 +103,7 @@ class PagosPage extends HTMLElement {
               <h2>Método de pago</h2>
               <input type="text" name="metodo-pago" id="metodo-pago" required />
             </div>
-          </div>
+
         </form>
         </table-datos>
         `;

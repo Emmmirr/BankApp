@@ -28,7 +28,7 @@ class ClientePage extends HTMLElement {
 
   render() {
     this.shadowRoot.innerHTML = `
-
+        <link rel="stylesheet" href="./forms.css" />
         <style>
                 *{
             margin : 0;
@@ -41,31 +41,6 @@ class ClientePage extends HTMLElement {
               gap: 100px;
             }
 
-                                .form-section {
-                display: flex;
-                gap: 35px;
-                width: 100%;
-                justify-content: center;
-
-                input {
-                    height: 35px;
-                    width: 250px;
-                    max-width: 300px;
-                    border-radius: 4px;
-                    background: hsl(0, 0%, 97%);
-                    border: 1px solid hsl(0, 0%, 80%);
-                    padding: 10px;
-
-                    &:user-invalid{
-                    border-color: red;
-                    }
-                }
-
-                h2 {
-                    font-size: 15px;
-                    font-weight: normal
-                }
-            }
 
 
         </style>
@@ -82,7 +57,6 @@ class ClientePage extends HTMLElement {
 
           <form slot="form" action="" id="formDatos" data-table="table-clientes">
 
-          <div class="form-section">
             <div>
               <h2>Nombre</h2>
               <input type="text" name="nombre" id="nombre" required />
@@ -92,10 +66,9 @@ class ClientePage extends HTMLElement {
               <h2>Apellido paterno</h2>
               <input type="text" name="apellido-paterno" id="apellido-paterno" />
             </div>
-          </div>
 
 
-          <div class="form-section">
+
             <div>
               <h2>Apellido materno</h2>
               <input type="text" name="apellido-materno" id="apellido-materno" required />
@@ -105,7 +78,6 @@ class ClientePage extends HTMLElement {
               <h2>Télefono</h2>
               <input type="tel" maxlength="10" pattern="[0-9]{10}" name="telefono" placeholder="7471233489" id="telefono" required />
             </div>
-          </div>
         </form>
         </table-datos>
         `;

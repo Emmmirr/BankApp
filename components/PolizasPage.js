@@ -33,6 +33,7 @@ class PolizasPage extends HTMLElement {
   render() {
     this.shadowRoot.innerHTML = `
 
+        <link rel="stylesheet" href="./forms.css" />
         <style>
                 *{
             margin : 0;
@@ -45,49 +46,6 @@ class PolizasPage extends HTMLElement {
               gap: 100px;
             }
 
-            .form-section {
-                display: flex;
-                gap: 35px;
-                width: 100%;
-                justify-content: center;
-
-                input {
-                    height: 35px;
-                    width: 250px;
-                    max-width: 300px;
-                    border-radius: 4px;
-                    background: hsl(0, 0%, 97%);
-                    border: 1px solid hsl(0, 0%, 80%);
-                    padding: 10px;
-
-                    &:user-invalid{
-                    border-color: red;
-                    }
-                }
-
-                select {
-
-                    height: 35px;
-                    width: 250px;
-                    max-width: 300px;
-                    border-radius: 4px;
-                    background: hsl(0, 0%, 97%);
-                    border: 1px solid hsl(0, 0%, 80%);
-                    padding: 10px;
-                
-                }
-
-                h2 {
-                    font-size: 15px;
-                    font-weight: normal;
-                }
-
-                label {
-                display: block;
-                  font-size: 15px;
-                  font-weight: normal;
-                }
-            }
 
 
         </style>
@@ -104,7 +62,6 @@ class PolizasPage extends HTMLElement {
           <form slot="form" action="" id="formPolizas" data-table="table-polizas">
 
 
-          <div class="form-section">
             <div>
               <label for="cliente">Cliente:</label>
               
@@ -116,13 +73,11 @@ class PolizasPage extends HTMLElement {
 
             <div>
               <label for="plan">Plan</label>
-              <select name="plan" id="plan" data-type="number"/>
+              <select name="plan" id="plan" data-type="number">
                 <option value="">Selecciona el producto</option>
               </select>
             </div>
-          </div>
 
-          <div class="form-section">
             <div>
               <h2>Fecha Inicio</h2>
               <input type="date" name="fecha-inicio" id="fecha-inicio" />
@@ -132,12 +87,10 @@ class PolizasPage extends HTMLElement {
               <h2>Fecha Fin</h2>
               <input type="date" name="fecha-fin" id="fecha-fin" />
             </div>
-          </div>
 
-          <div class="form-section">
             <div>
               <h2>Estado</h2>
-              <select name="estado" id="estado"/>
+              <select name="estado" id="estado">
                 <option value="">Selecciona el producto</option>
                 <option value="Activo">Activo</option>
                 <option value="Inactivo">Inactivo</option>
@@ -148,15 +101,12 @@ class PolizasPage extends HTMLElement {
               <h2>Precio Contratado</h2>
               <input readonly type="number" name="precio-contratado" id="precio-contratado" required />
             </div>
-          </div>
 
-          <div class="form-section">
             <div>
               <h2>Fecha Emision</h2>
               <input type="date" name="fecha-emision" id="fecha-emision" />
             </div>
 
-          </div>
 
         </form>
         </table-datos>
